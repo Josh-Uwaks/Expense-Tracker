@@ -5,8 +5,7 @@ export default function Navbar(){
         <>
         <div className=" shadow-sm border-b flex justify-between items-center py-4 px-5">   
             <div className='flex items-center gap-2 font-bold'>
-                <span>Welcome back!!</span>
-                <p>Joshua Uwakwe</p>
+             
             </div>
 
             <Menu>

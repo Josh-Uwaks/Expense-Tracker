@@ -12,7 +12,7 @@ type CardProp = {
 }
 
 export const Card = ( {title,paragraph, amount, icon}: CardProp ) => (
-    <div className="p-6 border rounded-[8px] flex justify-between items-center">
+    <div className="p-6 border rounded-[8px] flex justify-between items-center bg-white">
         <div>
             <div>
                 <h2>{title}</h2>

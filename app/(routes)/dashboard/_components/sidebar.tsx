@@ -37,8 +37,8 @@ export default function Sidebar(){
     return(
         <div className="">
             <div className='flex flex-col items-center justify-center my-6 text-blue-600'>
-                <DollarSign size={60} className='font-bold'/>
-                <h1 className=' tracking-widest font-bold'>Trackify</h1>
+                {/* <DollarSign size={60} className='font-bold'/>
+                <h1 className=' tracking-widest font-bold'>Trackify</h1> */}
             </div>
 
 

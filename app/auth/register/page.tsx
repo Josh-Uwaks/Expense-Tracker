@@ -1,12 +1,29 @@
+"use client"
+
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import {SubmitHandler, useForm} from "react-hook-form"
+import { RegistrationInput, FormSchema } from "@/app/schemas/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { regAction } from "@/app/actions/register";
 
 
 export default function Registration(){
+
+    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<RegistrationInput>({
+        resolver: zodResolver(FormSchema)
+    })
+    const onSubmit: SubmitHandler<RegistrationInput> = async (data) => {
+        try {
+            await regAction(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     return (
         <>
             <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
@@ -24,24 +41,27 @@ export default function Registration(){
                         <h1 className="text-2xl">Sign Up</h1>
                         <p>to continue with our Expense Tracker</p>
 
-                        <div className="my-6">
+                        <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
+
                             <div>
-                            <Label htmlFor="email">Email</Label>
-                            <Input type="email" id="email" className="mt-1"/>
+                                <Label htmlFor="email">Email</Label>
+                                <Input {...register("email")} type="email" id="email" className="mt-1"/>
                             </div>
+
+                            {errors.email && <div className="text-red-500">{errors.email.message}</div>}
 
                             <div className="my-3">
                                 <Label htmlFor="password">Password</Label>
-                                <Input type="password"  id="password" className="mt-1"/>
+                                <Input {...register("password")} type="password"  id="password" className="mt-1"/>
                             </div>
 
                             <div>
                                 <Label htmlFor="confirmpassword">Confirm Password</Label>
-                                <Input type="password" id="confirmpassword" className="mt-1"/>
+                                <Input {...register('confirm_password')} type="password" id="confirmpassword" className="mt-1"/>
                             </div>
 
-                            <Button className="w-full mt-6">Submit</Button>
-                        </div>
+                            <Button className="w-full mt-6"> {isSubmitting ? "Submitting..." : "Submit"}</Button>
+                        </form>
 
 
                         <div className="relative mt-12 pb-12 border-t border-input"> 

@@ -18,7 +18,7 @@ export const Card = ( {title,paragraph, amount, icon}: CardProp ) => (
                 <h2>{title}</h2>
                 <p>{paragraph}</p>
             </div>
-            <p className="text-2xl font-bold mt-4"><CountUp end={120000} duration={5}/></p>
+            <p className="text-2xl font-bold mt-4"><CountUp end={amount} duration={5}/></p>
         </div>
 
         <div className='p-3 rounded-full bg-gray-800 text-white'>

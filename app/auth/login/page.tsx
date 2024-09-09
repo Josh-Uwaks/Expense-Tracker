@@ -1,12 +1,48 @@
+"use client"
+
 import { FcGoogle } from "react-icons/fc";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import {useForm, SubmitHandler} from 'react-hook-form'
+import { LoginSchema, LoginInput } from "@/app/schemas/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginAction } from "@/app/actions/login";
+import { useTransition } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { defaultLoginRedirect } from "@/route";
 
 
 
 export default function Login(){
+    
+    const {toast} = useToast()
+    const [isPending, startTransition] = useTransition()
+ 
+
+    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<LoginInput>({
+        resolver: zodResolver(LoginSchema)
+    })
+
+    const onSubmit: SubmitHandler<LoginInput> = async(data) => {
+
+        startTransition(async () => {
+            const response = await LoginAction(data);
+
+            // Check if response has success property
+            if ('success' in response && response.success) {
+                window.location.href = defaultLoginRedirect; // Use the appropriate redirect URL
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: "Error",
+                    description: response.details
+                });
+            }
+        });
+    }
+
     return (
         <>
             <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
@@ -24,20 +60,23 @@ export default function Login(){
                         <h1 className="text-2xl">Sign In</h1>
                         <p>to continue with our Expense Tracker</p>
 
-                        <div className="my-6">
+                        <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
                             <div>
                             <Label htmlFor="email">Email</Label>
-                            <Input type="email" id="email" className="mt-1"/>
+                            <Input {...register('email')} type="email" id="email" className="mt-1"/>
                             </div>
+
+                            {errors.email && <div className="text-red-500 mt-3">{errors.email.message}</div>}
 
                             <div className="my-3">
                                 <Label htmlFor="password">Password</Label>
-                                <Input type="password"  id="password" className="mt-1"/>
+                                <Input {...register('password')} type="password"  id="password" className="mt-1"/>
                             </div>
 
+                            {errors.password && <div className="text-red-500">{errors.password.message}</div>}
 
-                            <Button className="w-full mt-6">Submit</Button>
-                        </div>
+                            <Button className="w-full mt-6" disabled={isPending}>{isSubmitting ? 'Submitting...' : 'Submit'}</Button>
+                        </form>
 
 
                         <div className="relative mt-12 pb-12 border-t border-input"> 

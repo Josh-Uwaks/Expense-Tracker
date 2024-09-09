@@ -36,9 +36,9 @@ const sidebarMenu = [
 export default function Sidebar(){
     return(
         <div className="">
-            <div className='flex flex-col items-center justify-center my-6 text-blue-600'>
-                {/* <DollarSign size={60} className='font-bold'/>
-                <h1 className=' tracking-widest font-bold'>Trackify</h1> */}
+            <div className='flex items-center px-4 my-8 text-gray-800'>
+                <DollarSign size={40} className='font-extrabold'/>
+                <h1 className=' tracking-widest font-bold text-2xl'>Trackify</h1>
             </div>
 
 

@@ -15,8 +15,8 @@ function Dashboard(){
                 <p className="text-gray-500">All informations regarding your expense are highlighted in the various section in the dashboard</p>
 
                 <div className="grid lg:grid-cols-3 gap-4 mt-5">
-                    <Card title={'Expenses'} paragraph="45% more since this week" amount={12} icon={<HandCoins/>} />
-                    <Card title={'Total Entries'} paragraph="45% more since this week" amount={12} icon={<ReceiptText/>} />
+                    <Card title={'Expenses'} paragraph="45% more since this week" amount={1200000} icon={<HandCoins/>} />
+                    <Card title={'Total Entries'} paragraph="45% more since this week" amount={1200000} icon={<ReceiptText/>} />
 
 
                     <div className="row-start-2 col-span-2 border rounded-[8px] p-4 bg-white">

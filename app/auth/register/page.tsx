@@ -9,16 +9,28 @@ import {SubmitHandler, useForm} from "react-hook-form"
 import { RegistrationInput, FormSchema } from "@/app/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { regAction } from "@/app/actions/register";
+import { Card } from "@/components/ui/card";
+import React from "react";
+import { toast } from "@/hooks/use-toast";
 
 
 export default function Registration(){
+
 
     const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<RegistrationInput>({
         resolver: zodResolver(FormSchema)
     })
     const onSubmit: SubmitHandler<RegistrationInput> = async (data) => {
         try {
-            await regAction(data)
+            const response = await regAction(data)
+            toast({
+                variant: 'default',
+                title: 'Success',
+                description: response.message
+            })
+
+            return response
+            
         } catch (error) {
             console.log(error)
         }
@@ -37,8 +49,8 @@ export default function Registration(){
                 </div>
 
                 <div className="lg:col-span-6 flex justify-center items-center">
-                    <div className="p-8 bg-white rounded-[16px] min-w-[430px] shadow-2xl">
-                        <h1 className="text-2xl">Sign Up</h1>
+                    <Card className="p-8 bg-white rounded-[16px] min-w-[430px] shadow-md border-none">
+                        <h1 className="text-2xl font-bold">Sign Up</h1>
                         <p>to continue with our Expense Tracker</p>
 
                         <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
@@ -74,7 +86,7 @@ export default function Registration(){
                         </div>
 
                         <div className="mt-4">No account ? <Link href={'/auth/login'} className="">Sign In</Link></div>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </>

@@ -21,6 +21,16 @@ export const LoginSchema = z.object({
     .max(16, 'Password must not be greater than 16')
 })
 
+export const ReportDateSchema = z.object({
+    first_date_entry: z.date({
+        required_error: "An entry date is required."
+    }),
+    second_date_entry: z.date({
+        required_error: "Second date entry is also required"
+    })
+})
+
+export type DateSchema = z.infer<typeof ReportDateSchema>
 export type RegistrationInput = z.infer<typeof FormSchema>
 export type LoginInput = z.infer<typeof LoginSchema>
 

@@ -1,3 +1,4 @@
+
 import React from "react"
 import { HandCoins } from 'lucide-react';
 import { ReceiptText } from 'lucide-react';
@@ -8,9 +9,10 @@ import Link from "next/link";
 import RecentTransaction from "./_components/tabledata";
 
 function Dashboard(){
+ 
     return (
         <>
-            <div className="p-6 bg-[#FAFAFA] min-h-screen">
+            <div className="py-6 px-14 bg-[#FAFAFA] min-h-screen">
                 <h1 className="text-2xl font-bold">Welcome!! Joshua Uwakwe 👋</h1>
                 <p className="text-gray-500">All informations regarding your expense are highlighted in the various section in the dashboard</p>
 

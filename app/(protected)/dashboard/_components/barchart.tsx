@@ -122,12 +122,12 @@ export default function Chart(){
 
         :
 
-        <BarChart width={850} height={300} data={data}>
+        <BarChart width={800} height={300} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
+            {/* <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Legend />
+            <Legend /> */}
             <Bar dataKey="pv" fill="#8884d8" />
             <Bar dataKey="uv" fill="#82ca9d" />
         </BarChart>

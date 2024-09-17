@@ -1,10 +1,11 @@
 "use server"
-import bcrypt from 'bcryptjs'
+// import argon from 'argon2'
 import prisma from '@/prisma'
 import * as z from 'zod'
 import { FormSchema } from '../schemas/schema'
 import { getUserByEmail } from '@/lib/ApiRequests/requests'
-
+import bcrypt from 'bcryptjs'
+import { generateVerificationToken } from '@/lib/verificationTokens/generateToken'
 
 export const regAction = async (values: z.infer<typeof FormSchema>) => {
     
@@ -23,9 +24,12 @@ export const regAction = async (values: z.infer<typeof FormSchema>) => {
         const existingUser = await getUserByEmail(email)
 
         if (existingUser) {
-            return {error: 'User already exist'}
+            return {
+                error: 'User already exist'
+            }
         }
 
+        
         await prisma.user.create({
             data: {
                 email,
@@ -33,6 +37,10 @@ export const regAction = async (values: z.infer<typeof FormSchema>) => {
             }
         })
 
+        const tokenrequest = await generateVerificationToken(email)
+
+            
+ 
         return { message: 'Registration is successful' };
 
     } catch (error: any) {

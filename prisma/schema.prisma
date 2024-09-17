@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,6 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRoles {
+  ADMIN
+  USER
+}
+
 model User {
   id            String     @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
@@ -19,12 +22,11 @@ model User {
   emailVerified DateTime?  @map("email_verified")
   image         String?
   password      String?
+  role          UserRoles  @default(USER)
   accounts      Account[]
   expenses      Expense[]  @relation("UserExpenses")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("users")
+  @@map("users") // Maps to 'users' collection in MongoDB
 }
 
 model Account {
@@ -33,18 +35,18 @@ model Account {
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
+  refreshToken      String? @map("refresh_token")
+  accessToken       String? @map("access_token")
+  expiresAt         Int?    @map("expires_at")
+  tokenType         String? @map("token_type")
   scope             String?
-  id_token          String?
-  session_state     String?
+  idToken           String? @map("id_token")
+  sessionState      String? @map("session_state")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
-  @@map("accounts")
+  @@unique([provider, providerAccountId]) // Unique constraint for provider accounts
+  @@map("accounts") // Maps to 'accounts' collection in MongoDB
 }
 
 model Expense {
@@ -58,8 +60,9 @@ model Expense {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([userId], map: "userId_idx")
-  @@index([categoryId], map: "categoryId_idx")
+  @@index([userId], map: "userId_idx")        // Index for quick querying by userId
+  @@index([categoryId], map: "categoryId_idx") // Index for quick querying by categoryId
+  @@map("expenses") // Maps to 'expenses' collection in MongoDB
 }
 
 model Category {
@@ -68,4 +71,16 @@ model Category {
   expenses  Expense[] @relation("CategoryExpenses")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@map("categories") // Maps to 'categories' collection in MongoDB
+}
+
+model VerificationToken {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId // Primary key using MongoDB ObjectId
+  email   String   // Typically the email or user identifier
+  token   String   @unique // Unique verification token
+  expires DateTime // Expiration date of the token
+
+  @@unique([email, token]) // Ensures uniqueness of the email-token pair
+  @@map("verificationtokens") // Maps to 'verificationtokens' collection in MongoDB
 }

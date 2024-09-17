@@ -12,12 +12,16 @@ import { LoginAction } from "@/app/actions/login";
 import { useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { defaultLoginRedirect } from "@/route";
-
+import { Card } from "@/components/ui/card";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 
 export default function Login(){
     
     const {toast} = useToast()
+    const searchParams = useSearchParams()
+    const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
     const [isPending, startTransition] = useTransition()
  
 
@@ -30,14 +34,15 @@ export default function Login(){
         startTransition(async () => {
             const response = await LoginAction(data);
 
+            console.log(response)
             // Check if response has success property
             if ('success' in response && response.success) {
-                window.location.href = defaultLoginRedirect; // Use the appropriate redirect URL
+                window.location.href = defaultLoginRedirect; 
             } else {
                 toast({
                     variant: 'destructive',
                     title: "Error",
-                    description: response.details
+                    description: response.error
                 });
             }
         });
@@ -56,8 +61,8 @@ export default function Login(){
                 </div>
 
                 <div className="lg:col-span-6 flex justify-center items-center">
-                    <div className="p-8 bg-white rounded-[16px] min-w-[430px] shadow-2xl">
-                        <h1 className="text-2xl">Sign In</h1>
+                    <Card className="p-8 bg-white rounded-[16px] min-w-[430px] shadow-md border-none">
+                        <h1 className="text-2xl font-bold">Sign In</h1>
                         <p>to continue with our Expense Tracker</p>
 
                         <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
@@ -73,7 +78,12 @@ export default function Login(){
                                 <Input {...register('password')} type="password"  id="password" className="mt-1"/>
                             </div>
 
+                            <div className="flex justify-end">
+                                <Link href={''}>forgot password?</Link>
+                            </div>
+
                             {errors.password && <div className="text-red-500">{errors.password.message}</div>}
+                            {urlError}
 
                             <Button className="w-full mt-6" disabled={isPending}>{isSubmitting ? 'Submitting...' : 'Submit'}</Button>
                         </form>
@@ -83,13 +93,13 @@ export default function Login(){
                             <div className="bg-white absolute left-1/2 -mt-[26px] transform -translate-x-1/2 p-4 rounded-full">or</div>
                         </div>
 
-                        <div className="flex gap-2 p-3 rounded-md border border-input hover:bg-[#dcdcdc] cursor-pointer">
+                        <div className="flex gap-2 p-3 rounded-md border border-input  cursor-pointer" onClick={() => signIn('google', {callbackUrl: defaultLoginRedirect})}>
                             <FcGoogle size={20}/>
                             <p>Continue with Google</p>
                         </div>
 
                         <div className="mt-4">No account ? <Link href={'/auth/register'} className="">Sign Up</Link></div>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </>

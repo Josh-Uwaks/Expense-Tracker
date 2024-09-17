@@ -1,6 +1,14 @@
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 
+export type Payment = {
+  id: string
+  amount: number
+  category: string
+  description: string
+  date: string
+  // status: "pending" | "processing" | "success" | "failed"
+}
 
 export type Category = {
   id: string;
@@ -69,8 +77,8 @@ declare module "next-auth" {
 }
 
 // Add user ID to the JWT token
-declare module "next-auth/jwt" {
-  interface JWT {
-      sub: string;
-  }
-}
+// declare module "next-auth/jwt" {
+//   interface JWT {
+//       sub: string;
+//   }
+// }

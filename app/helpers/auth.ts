@@ -18,13 +18,17 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
   },
   events: {
     async linkAccount({user}) {
+
       await prisma.user.update({
+
         where: {
           id: user.id
         },
+
         data: {
           emailVerified: new Date()
         }
+        
       })
     }
   },

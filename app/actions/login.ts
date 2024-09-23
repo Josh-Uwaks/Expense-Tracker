@@ -1,11 +1,12 @@
 "use server"
 import * as z from 'zod'
-import { LoginSchema, LoginInput } from '../schemas/schema'
+import { LoginSchema } from '../schemas/schema'
 import { signIn } from '../helpers/auth'
 import {AuthError} from 'next-auth'
-import { defaultLoginRedirect } from '@/route'
-import { generateVerificationToken } from '@/lib/verificationTokens/generateToken'
+import { generateVerificationToken } from '@/lib/tokenRequests/verificationTokenRequests'
 import { getUserByEmail } from '@/lib/ApiRequests/requests'
+import { sendVerificationMail } from '@/lib/mail/mail'
+import { defaultLoginRedirect } from '@/route'
 
 export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
     const validateFields = LoginSchema.safeParse(values)
@@ -24,7 +25,8 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
     }
 
     if (!existingUser.emailVerified) {
-        const verificationToken = await generateVerificationToken(existingUser.email)
+        const verification = await generateVerificationToken(existingUser.email)
+        await sendVerificationMail(verification.email, verification.token)
         return {success: "Confirmation Email has been sent"}
     }
 

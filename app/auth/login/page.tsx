@@ -25,7 +25,7 @@ export default function Login(){
     const [isPending, startTransition] = useTransition()
  
 
-    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<LoginInput>({
+    const {register, handleSubmit, reset, formState: {errors, isSubmitting}} = useForm<LoginInput>({
         resolver: zodResolver(LoginSchema)
     })
 
@@ -38,6 +38,7 @@ export default function Login(){
             // Check if response has success property
             if ('success' in response && response.success) {
                 window.location.href = defaultLoginRedirect; 
+                reset()
             } else {
                 toast({
                     variant: 'destructive',
@@ -79,7 +80,7 @@ export default function Login(){
                             </div>
 
                             <div className="flex justify-end">
-                                <Link href={''}>forgot password?</Link>
+                                <Link href={'/auth/reset'}>forgot password?</Link>
                             </div>
 
                             {errors.password && <div className="text-red-500">{errors.password.message}</div>}

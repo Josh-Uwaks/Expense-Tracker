@@ -12,28 +12,46 @@ import { regAction } from "@/app/actions/register";
 import { Card } from "@/components/ui/card";
 import React from "react";
 import { toast } from "@/hooks/use-toast";
+import { useTransition } from "react";
+
 
 
 export default function Registration(){
 
 
-    const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<RegistrationInput>({
+    const {register, handleSubmit, reset, formState: {errors, isSubmitting}} = useForm<RegistrationInput>({
         resolver: zodResolver(FormSchema)
     })
-    const onSubmit: SubmitHandler<RegistrationInput> = async (data) => {
-        try {
-            const response = await regAction(data)
-            toast({
-                variant: 'default',
-                title: 'Success',
-                description: response.message
-            })
 
-            return response
-            
-        } catch (error) {
-            console.log(error)
-        }
+    const [isPending, startTransition] = useTransition()
+
+    const onSubmit: SubmitHandler<RegistrationInput> = async (data) => {
+
+        startTransition(async () => {
+            const response = await regAction(data);
+
+            console.log(response)
+            // Check if response has success property
+            if ('success' in response && response.success) {
+                // window.location.href = defaultLoginRedirect; 
+
+                reset()
+
+                toast({
+                    variant: 'default',
+                    title: "Success",
+                    description: response.message
+                })
+
+
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: "Error",
+                    description: response.details
+                });
+            }
+        });
     }
     
     return (
@@ -67,10 +85,14 @@ export default function Registration(){
                                 <Input {...register("password")} type="password"  id="password" className="mt-1"/>
                             </div>
 
+                            {errors.password && <div>{errors.password.message}</div>}
+
                             <div>
                                 <Label htmlFor="confirmpassword">Confirm Password</Label>
                                 <Input {...register('confirm_password')} type="password" id="confirmpassword" className="mt-1"/>
                             </div>
+
+                            {errors.confirm_password && <div>{errors.confirm_password.message}</div>}
 
                             <Button className="w-full mt-6"> {isSubmitting ? "Submitting..." : "Submit"}</Button>
                         </form>

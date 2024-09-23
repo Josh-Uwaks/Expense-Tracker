@@ -83,7 +83,7 @@ const page = ({data}: CalenderFormProp) => {
  
   return (
     <>
-      <div className=''>
+      <div className='min-h-screen'>
         <div className='mb-3 py-6 px-14 flex'>
             <Link href={'/dashboard'}>Dashboard</Link> 
             <ChevronRight size={20}/>
@@ -94,106 +94,106 @@ const page = ({data}: CalenderFormProp) => {
         <div className="space-y-10 py-6 px-14 bg-[#FAFAFA]">
         <div className="flex justify-between items-center w-full">
 
-<Form {...form}>
-<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-<div className="flex gap-4">
-<FormField
-   control={form.control}
-   name="first_date_entry"
-   render={({ field }) => (
-       <FormItem className="flex flex-col">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="flex gap-4">
+            <FormField
+            control={form.control}
+            name="first_date_entry"
+            render={({ field }) => (
+                <FormItem className="flex flex-col">
 
-       <Popover>
-           <PopoverTrigger asChild>
-           <FormControl>
-               <Button
-               variant={"outline"}
-               className={cn(
-                   "w-[240px] pl-3 text-left font-normal",
-                   !field.value && "text-muted-foreground"
-               )}
-               >
-               {field.value ? (
-                   format(field.value, "PPP")
-               ) : (
-                   <span>Start Date</span>
-               )}
-               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-               </Button>
-           </FormControl>
-           </PopoverTrigger>
-           <PopoverContent className="w-auto p-0" align="start">
-           <Calendar
-               mode="single"
-               selected={field.value}
-               onSelect={field.onChange}
-               disabled={(date) =>
-               date > new Date() || date < new Date("1900-01-01")
-               }
-               initialFocus
-           />
-           </PopoverContent>
-       </Popover>
+                <Popover>
+                    <PopoverTrigger asChild>
+                    <FormControl>
+                        <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                        )}
+                        >
+                        {field.value ? (
+                            format(field.value, "PPP")
+                        ) : (
+                            <span>Start Date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                    </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                    />
+                    </PopoverContent>
+                </Popover>
 
-       <FormMessage />
-       </FormItem>
-   )}
-   />
+                <FormMessage />
+                </FormItem>
+            )}
+            />
 
-<FormField
-   control={form.control}
-   name="second_date_entry"
-   render={({ field }) => (
-       <FormItem className="flex flex-col">
+            <FormField
+            control={form.control}
+            name="second_date_entry"
+            render={({ field }) => (
+                <FormItem className="flex flex-col">
 
-       <Popover>
-           <PopoverTrigger asChild>
-           <FormControl>
-               <Button
-               variant={"outline"}
-               className={cn(
-                   "w-[240px] pl-3 text-left font-normal",
-                   !field.value && "text-muted-foreground"
-               )}
-               >
-               {field.value ? (
-                   format(field.value, "PPP")
-               ) : (
-                   <span>End Date</span>
-               )}
-               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-               </Button>
-           </FormControl>
-           </PopoverTrigger>
-           <PopoverContent className="w-auto p-0" align="start">
-           <Calendar
-               mode="single"
-               selected={field.value}
-               onSelect={field.onChange}
-               disabled={(date) =>
-               date > new Date() || date < new Date("1900-01-01")
-               }
-               initialFocus
-           />
-           </PopoverContent>
-       </Popover>
+                <Popover>
+                    <PopoverTrigger asChild>
+                    <FormControl>
+                        <Button
+                        variant={"outline"}
+                        className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                        )}
+                        >
+                        {field.value ? (
+                            format(field.value, "PPP")
+                        ) : (
+                            <span>End Date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                    </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                        }
+                        initialFocus
+                    />
+                    </PopoverContent>
+                </Popover>
 
-       <FormMessage />
-       </FormItem>
-   )}
-   />
+                <FormMessage />
+                </FormItem>
+            )}
+            />
 
-   <Button type="submit" className="bg-gray-800">Query</Button>
-   <Button variant={'outline'}>Show All</Button>
+            <Button type="submit" className="bg-gray-800">Query</Button>
+            <Button variant={'outline'}>Show All</Button>
 
-</div>
+            </div>
 
 
-</form>
-</Form>
+            </form>
+        </Form>
 
-<Download/>
-</div>
+        <Download/>
+        </div>
           <DataTableDemo/>
         </div>
       </div>

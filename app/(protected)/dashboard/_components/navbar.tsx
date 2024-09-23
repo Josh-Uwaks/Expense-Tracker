@@ -3,6 +3,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { signOut } from '@/app/helpers/auth'
 import { Button } from '@/components/ui/button'
 import { auth } from '@/app/helpers/auth'
+import { RxHamburgerMenu } from "react-icons/rx";
+
 
 export default async function Navbar(){
 
@@ -10,11 +12,13 @@ export default async function Navbar(){
     
     return(
         <>
-        <div className=" shadow-sm border-b flex justify-between items-center py-4 px-5">   
-            <div className='flex items-center gap-2 font-bold'>
-        </div>
+        <div className=" shadow-sm border-b flex justify-between items-center py-4 px-5"> 
 
-        {JSON.stringify(session)}
+            <div className='md:hidden'>
+                <RxHamburgerMenu size={20}/>
+            </div> 
+
+        {/* {JSON.stringify(session)} */}
             
             <Menu>
                 <MenuButton className="rounded-full py-3 px-5 bg-gray-800 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">

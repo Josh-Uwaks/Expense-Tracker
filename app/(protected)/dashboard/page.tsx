@@ -12,11 +12,11 @@ function Dashboard(){
  
     return (
         <>
-            <div className="py-6 px-14 bg-[#FAFAFA] min-h-screen">
+            <div className="py-6 px-6 md:px-14 bg-[#FAFAFA] min-h-screen">
                 <h1 className="text-2xl font-bold">Welcome!! Joshua Uwakwe 👋</h1>
                 <p className="text-gray-500">All informations regarding your expense are highlighted in the various section in the dashboard</p>
 
-                <div className="grid lg:grid-cols-3 gap-4 mt-5">
+                <div className="lg:grid grid-cols-3 gap-4 flex flex-col mt-5">
                     <Card title={'Expenses'} paragraph="45% more since this week" amount={1200000} icon={<HandCoins/>} />
                     <Card title={'Total Entries'} paragraph="45% more since this week" amount={1200000} icon={<ReceiptText/>} />
 

@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, PieChart, Pie} from 'recharts'
 
 const data = [
@@ -99,12 +99,38 @@ const data = [
 export default function Chart(){
 
     const [changeChart, setChangeChart] = React.useState(false)
+    const [dimension, setDimension] = React.useState({ width: 800, height: 300 });
 
     const onChange = () => {
         setChangeChart(prev => !prev)
     }
 
-    console.log(changeChart)
+    console.log({
+      changeChart,
+      dimension
+    })
+
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth <= 768) {
+          setDimension({ width: 340, height: 300 });
+        } else if (window.innerWidth <= 1024) {
+          setDimension({ width: 350, height: 250 });
+        } else if (window.innerWidth <= 1200) {
+          setDimension({ width: 450, height: 300 });
+        } else if (window.innerWidth <= 1450) {
+          setDimension({width: 500, height: 300})
+        } else {
+          setDimension({width: 800, height: 300})
+        }
+      }
+
+      window.addEventListener('resize', handleResize)
+
+      handleResize()
+
+      return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     return(
         <>
@@ -115,14 +141,14 @@ export default function Chart(){
         {
         changeChart ?   
         
-        <PieChart width={850} height={300}>
+        <PieChart width={dimension.width} height={dimension.height} >
             <Pie data={data01} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#8884d8" />
             <Pie data={data02} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#82ca9d" label />
         </PieChart>
 
         :
 
-        <BarChart width={800} height={300} data={data}>
+        <BarChart width={dimension.width} height={dimension.height} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             {/* <XAxis dataKey="name" />
             <YAxis />

@@ -21,10 +21,7 @@ export const ResetPasswordAction = async (values: z.infer<typeof ResetPasswordSc
     if(!token) {
         return {error: "Missing Token"}
     }
-
-
     const {password} = validateFields.data
-
 
     const hashedPassword = await bcrypt.hash(password, 10)
 

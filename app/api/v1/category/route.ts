@@ -25,7 +25,18 @@ export async function POST(request: NextRequest) {
       if(!userExist) {
         return NextResponse.json({message: 'Invalid User ID'}, {status: 400})
       }
-  
+
+      const checkcategory = await prisma.category.findFirst({
+        where: {
+          name: name,
+          userId: userId
+        }
+      })
+
+      if(checkcategory) {
+        return NextResponse.json({message: "Category already exists"}, {status: 400})
+      }
+
       // Create a new expense
       const newCategory = await prisma.category.create({
         data: {

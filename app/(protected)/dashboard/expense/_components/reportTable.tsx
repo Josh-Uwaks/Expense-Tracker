@@ -80,7 +80,10 @@ const columns: ColumnDef<Payment>[] = [
                   <ArrowUpDown className="ml-2 h-4 w-4"/>
               </Button>
           )
-      }
+      },
+      cell: ({row}) => (
+        <div className="capitalize">{row.getValue("category")}</div>
+      )
     },
     {
       accessorKey: "description",
@@ -192,12 +195,10 @@ const columns: ColumnDef<Payment>[] = [
 export function DataTableDemo() {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [pageSize, setPageSize] = React.useState(5)
 
   const table = useReactTable({
     data,
@@ -216,20 +217,40 @@ export function DataTableDemo() {
       columnVisibility,
       rowSelection,
     },
+    initialState: {pagination: {pageSize: pageSize}}
   })
 
   return (
     <div className="w-full">
 
 
-      <div className="rounded-md border bg-white">
+        <div className="flex justify-end">
+              <div className="flex items-center justify-between py-4">
+                <div>
+                  <span>Rows per page: </span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      setPageSize(Number(e.target.value))
+                      table.setPageSize(Number(e.target.value))
+                    }}
+                  >
+                    <option value={5}>5</option>
+                    <option value={8}>8</option>
+                    <option value={10}>10</option>
+                  </select>
+                </div>
+            </div>
+          </div>
+
+      <div className="rounded-md border bg-white"> 
         <Table>
-          <TableHeader className="">
+          <TableHeader className="bg-gray-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="">
+                    <TableHead key={header.id} className="text-white">
                       {header.isPlaceholder
                         ? null
                         : flexRender(

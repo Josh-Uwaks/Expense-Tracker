@@ -15,16 +15,16 @@ export async function getUserExpense(userId: string): Promise<ExpenseResponse> {
 
 export async function getUserCategories(userId: string): Promise<CategoryResponse> {
   try {
-    const response = await axios.get<CategoryResponse>(`/api/v1/expense/${userId}`);
+    const response = await axios.get<CategoryResponse>(`/api/v1/category/${userId}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching user expenses:', error);
+    console.error('Error fetching user categories:', error);
     throw error;
   }
 }
 
 // API POST METHOD TO SEND LOGGED IN USER DATA TO MONGODB
-export async function submitCategory(name: string, userId: string) {
+export async function addCategory(name: string, userId: string) {
     try {
         const response = await axios.post('/api/v1/category', {
             name,

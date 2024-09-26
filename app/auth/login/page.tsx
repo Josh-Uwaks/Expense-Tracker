@@ -36,14 +36,14 @@ export default function Login(){
 
             console.log(response)
             // Check if response has success property
-            if ('success' in response && response.success) {
+            if(response?.success) {
                 window.location.href = defaultLoginRedirect; 
                 reset()
-            } else {
+            } else if (response?.error) {
                 toast({
-                    variant: 'destructive',
+                    variant: "destructive",
                     title: "Error",
-                    description: response.error
+                    description: response.error || response.details || "An unexpected error occurred",
                 });
             }
         });
@@ -86,7 +86,9 @@ export default function Login(){
                             {errors.password && <div className="text-red-500">{errors.password.message}</div>}
                             {urlError}
 
-                            <Button className="w-full mt-6" disabled={isPending}>{isSubmitting ? 'Submitting...' : 'Submit'}</Button>
+                            <Button className="w-full mt-6" disabled={isPending || isSubmitting}>
+                                {isPending || isSubmitting ? 'Submitting...' : 'Submit'}
+                            </Button>
                         </form>
 
 

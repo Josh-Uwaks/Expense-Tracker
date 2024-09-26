@@ -77,7 +77,7 @@ export default function ResetPage() {
 
                         {errors.email && <div className="text-red-500 mt-3">{errors.email.message}</div>}
 
-                        <Button className="w-full mt-6"> {isSubmitting ? "Submitting..." : "Send Resend Email"}</Button>
+                        <Button className="w-full mt-6" disabled={isPending || isSubmitting}> {isPending || isSubmitting ? "Submitting..." : "Send Resend Email"}</Button>
                     </form>
 
                     <Link href="/auth/login" className='mt-4'>Back to Login</Link>

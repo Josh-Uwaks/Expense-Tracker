@@ -3,8 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { signOut } from '@/app/helpers/auth'
 import { Button } from '@/components/ui/button'
 import { auth } from '@/app/helpers/auth'
-import { RxHamburgerMenu } from "react-icons/rx";
-
+import ToggleNav from './Toggle'
 
 export default async function Navbar(){
 
@@ -14,14 +13,11 @@ export default async function Navbar(){
         <>
         <div className=" shadow-sm border-b flex justify-between items-center py-4 px-5"> 
 
-            <div className='md:hidden'>
-                <RxHamburgerMenu size={20}/>
-            </div> 
-
-        {/* {JSON.stringify(session)} */}
+            <ToggleNav/>
+        {JSON.stringify(session)}
             
             <Menu>
-                <MenuButton className="rounded-full py-3 px-5 bg-gray-800 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+                <MenuButton className="rounded-full h-[50px] w-[50px] bg-gray-800 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
                 {session?.user.email.charAt(0)}
                 </MenuButton>
 

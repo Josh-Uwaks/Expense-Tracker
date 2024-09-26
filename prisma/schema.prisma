@@ -71,7 +71,7 @@ model Expense {
 
 model Category {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
+  name      String    
   userId    String    @db.ObjectId
   user      User      @relation("UserCategory", fields: [userId], references: [id])
   expenses  Expense[] @relation("CategoryExpenses")
@@ -79,6 +79,7 @@ model Category {
   updatedAt DateTime  @updatedAt
 
   @@map("categories") // Maps to 'categories' collection in MongoDB
+  @@unique([name])
 }
 
 model VerificationToken {

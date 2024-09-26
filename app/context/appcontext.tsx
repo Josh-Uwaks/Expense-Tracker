@@ -2,7 +2,7 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Category, Expense } from "@/app/types";
-import  { getUserCategories, getUserExpense } from "@/lib/ApiRequests/requests";
+import  { getUserCategories, getUserExpense, addCategory as apiAddCategory } from "@/lib/ApiRequests/requests";
 
 interface ContextType {
     session: Session | null;
@@ -13,6 +13,7 @@ interface ContextType {
     refreshExpenses: () => void;
     refreshCategories: () => void;
     getTotalExpense: () => number; // Ensure this is correctly defined
+    addCategory: (name: string, userId: string) => Promise<void>
 }
 
 const AppContext = createContext<ContextType | undefined>(undefined);
@@ -20,6 +21,7 @@ const AppContext = createContext<ContextType | undefined>(undefined);
 export function ContextWrapper({ children }: { children: React.ReactNode }) {
     // User data
     const { data: session } = useSession();
+    console.log(session)
 
     // Expense data
     const [expense, setExpenses] = useState<Expense[]>([]);
@@ -53,6 +55,21 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
         return expense.reduce((total, item) => total + item.amount, 0);
     };
 
+    const addCategory = async (name: string, userId: string) => {
+        try {
+            const response = await apiAddCategory(name, userId); // Call the API with both parameters
+            if (response.status === 201) {
+                const newCategory = response?.data?.newCategory; // Adjust this according to your response structure
+                setCategories((prev) => [...prev, newCategory]); // Add the new category to the state
+            } else {
+                setError(response?.data?.message); // Set error message from the response
+            }
+        } catch (error) {
+            setError((error as Error).message || 'An error occurred while adding the category.');
+        }
+    };
+    
+
     useEffect(() => {
         if (userId) {
             fetchExpenses();
@@ -61,7 +78,7 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
     }, [userId]);
 
     return (
-        <AppContext.Provider value={{ session, expense, categories, error, userId, refreshCategories: fetchCategories, refreshExpenses: fetchExpenses, getTotalExpense }}>
+        <AppContext.Provider value={{ session, expense, categories, error, userId, addCategory, refreshCategories: fetchCategories, refreshExpenses: fetchExpenses, getTotalExpense }}>
             {children}
         </AppContext.Provider>
     );

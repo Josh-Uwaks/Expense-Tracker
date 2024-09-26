@@ -100,7 +100,7 @@ const page = async () => {
 
             <div className='border p-6 rounded-md mt-6'>
               <div className='flex items-center justify-between rounded-md'>
-                <h1>Google</h1>
+                <h1 className='text-2xl'>Google</h1>
                 <span className='py-3 px-5 bg-[#EBF9E6] text-[#18B304] rounded-[20px]'>Connected</span>
               </div>
 

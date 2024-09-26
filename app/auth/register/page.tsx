@@ -29,26 +29,20 @@ export default function Registration(){
 
         startTransition(async () => {
             const response = await regAction(data);
-
             console.log(response)
-            // Check if response has success property
-            if ('success' in response && response.success) {
-                // window.location.href = defaultLoginRedirect; 
 
+            if(response?.message) {
                 reset()
-
                 toast({
                     variant: 'default',
                     title: "Success",
                     description: response.message
                 })
-
-
-            } else {
+            } else if (response?.error) {
                 toast({
-                    variant: 'destructive',
+                    variant: "destructive",
                     title: "Error",
-                    description: response.details
+                    description: response.error || response.details || "An unexpected error occurred",
                 });
             }
         });
@@ -94,7 +88,9 @@ export default function Registration(){
 
                             {errors.confirm_password && <div>{errors.confirm_password.message}</div>}
 
-                            <Button className="w-full mt-6"> {isSubmitting ? "Submitting..." : "Submit"}</Button>
+                            <Button className="w-full mt-6" disabled={isPending || isSubmitting}> 
+                                {isPending || isSubmitting ? "Submitting..." : "Submit"}
+                            </Button>
                         </form>
 
 

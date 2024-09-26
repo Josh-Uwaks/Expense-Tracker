@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 import {BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, PieChart, Pie} from 'recharts'
+import { ArrowLeftRight } from 'lucide-react';
 
 const data = [
     {
@@ -135,7 +136,7 @@ export default function Chart(){
     return(
         <>
         <div className='my-3'>
-            <button onClick={onChange}>change chart</button>
+            <button onClick={onChange} className='flex gap-2 text-[12px] items-center'> <ArrowLeftRight size={15}/>Pie Chart</button>
         </div>
 
         {
@@ -150,10 +151,10 @@ export default function Chart(){
 
         <BarChart width={dimension.width} height={dimension.height} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            {/* <XAxis dataKey="name" />
+            <XAxis dataKey="name" />
             <YAxis />
             <Tooltip />
-            <Legend /> */}
+            <Legend />
             <Bar dataKey="pv" fill="#8884d8" />
             <Bar dataKey="uv" fill="#82ca9d" />
         </BarChart>

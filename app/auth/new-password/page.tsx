@@ -36,12 +36,10 @@ function NewPassword() {
         startTransition(async () => {
 
             const response = await ResetPasswordAction(data, token);
-
             console.log(response)
 
             // Check if response has success property
-            if ('success' in response && response.success) {
-
+            if(response?.success) {
                 reset()
 
                 toast({
@@ -49,9 +47,7 @@ function NewPassword() {
                     title: "Success",
                     description: response.success
                 })
-
-
-            } else {
+            } else if (response?.error) {
                 toast({
                     variant: 'destructive',
                     title: "Error",
@@ -97,7 +93,9 @@ function NewPassword() {
                         {errors.confirm_password && <div className="text-red-500 mt-3">{errors.confirm_password.message}</div>}
                         {errors.root && <div>{errors.root.message}</div>}
 
-                        <Button className="mt-6 w-full">{isSubmitting ? "Submitting" : "Reset Password"}</Button>
+                        <Button className="mt-6 w-full" disabled={isPending || isSubmitting}>
+                            {isPending || isSubmitting ? "Submitting" : "Reset Password"}
+                        </Button>
 
                     </form>
 

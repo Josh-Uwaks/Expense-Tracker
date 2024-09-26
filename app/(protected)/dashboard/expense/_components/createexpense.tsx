@@ -1,4 +1,3 @@
-"use client"
 
 import {
     Dialog,
@@ -32,57 +31,84 @@ import { format } from "date-fns"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import React from "react"
-  
+import React, { useState } from "react"
+import { Plus } from 'lucide-react';
+import {Separator} from '@/components/ui/separator'
+import { useAppContext } from "@/app/context/appcontext"
 
-const CreateExpense = () => {
+
+
+const CreateExpense = async () => {
+
+
     return (
         <>
         <Dialog>
             <DialogTrigger asChild>
-                <div className="bg-slate-100 p-10 flex flex-col items-center rounded-md border-2 border-dashed">
-                    <h1 className="text-2xl">+</h1>
-                    <p className="">Create New Expense</p>
-                </div>
+                <Button className="flex items-center">
+                    <Plus size={20}/>
+                    <span className='hidden md:block'>New Expense</span>
+              </Button>
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent className="min-w-[70%]">
               <DialogHeader>
                 <DialogTitle>Create New Expense</DialogTitle>
                 <DialogDescription>
-
                   This provide the necessary informations to create add to the expense data.
 
+                  <Separator className="mt-4 mb-8"/>
+
+                  <div className="mt-3 lg:grid grid-cols-2 gap-5">
+
+                    <div>
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
+                            <Input type="text" id="amount" placeholder="e.g 5000" className="mt-1 md:mt-0 lg:w-[500px]"/>
+                        </div>
+                        <div className="my-4 flex flex-col md:flex-row md:items-center">
+                            <Label className="lg:w-[100px] text-left">Date*</Label>
+                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0"/>
+                        </div>
+                        <div className="flex flex-col md:flex-row md:items-center">
+                            <Label className="lg:w-[100px] text-left">Category*</Label>
+                            <SelectCategory classname='w-full lg:w-[500px] mt-1 md:mt-0'/>
+                        </div>
+                        <div className="my-4 flex flex-col md:flex-row md:items-center">
+                            <Label htmlFor="description" className="lg:w-[100px] text-left">Description*</Label>
+                            <Textarea placeholder="Description here..." className="mt-1 md:mt-0 resize-none w-full lg:w-[500px] h-[200px]"/>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        {/* <div className="flex flex-col gap-2 md:flex-row md:items-center">
+                            <Label className="lg:w-[100px]">Categories</Label>
+                            <Input className="mt-1 md:mt-0 lg:w-[500px]" value={addCat} onChange={(e) => setAddCat(e.target.value)} name="addCat"/>
+                            <Button onClick={AddCategory}>Add</Button>
+                        </div> */}
+                    </div>
+                  </div>
 
                   <div className="mt-3">
-                    <div>
-                        <Label htmlFor="amount">Amount</Label>
-                        <Input type="number" id="amount" placeholder="e.g 5000" className="mt-1"/>
-                    </div>
+                   
 
-                    <div className="my-4">
-                        <Label>Pick a date</Label><br/>
-                        <DatePicker/>
-                    </div>
+                    
 
-                    <div className="">
-                        <Label>Select Category</Label>
-                        <SelectCategory/>
-                    </div>
+                    
 
-                    <div className="my-4">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea placeholder="Description here..." className="mt-1"/>
-                    </div>
+                    
 
 
-                    <div className="">
-                        <Button className="w-full mb-2">Submit</Button>
-                        <Button className="w-full" variant={'ghost'}>Clear</Button>
+                    <div className="flex gap-4 justify-end">
+                        <Button className="mb-2">Save</Button>
+                        <Button className="" variant={'ghost'}>Clear</Button>
                     </div>
 
                 
                   </div>
+
+
                 </DialogDescription>
               </DialogHeader>
             </DialogContent>
@@ -97,7 +123,7 @@ export default CreateExpense
 
 
 
-const DatePicker = () => {
+const DatePicker = ({classname}: {classname?: string}) => {
      const [date, setDate] = React.useState<Date>()
 
      return (
@@ -106,8 +132,8 @@ const DatePicker = () => {
             <Button
             variant={"outline"}
             className={cn(
-                "w-full justify-start text-left font-normal mt-1",
-                !date && "text-muted-foreground"
+                ` ${classname} justify-start text-left font-normal mt-1",
+                !date && "text-muted-foreground`
             )}
             >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -126,10 +152,10 @@ const DatePicker = () => {
      )
 }
 
-const SelectCategory = () => {
+const SelectCategory = ({classname}: {classname: string}) => {
     return (
         <Select>
-            <SelectTrigger className="w-full mt-1">
+            <SelectTrigger className={`${classname} mt-1`}>
                 <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>

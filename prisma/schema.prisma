@@ -15,22 +15,26 @@ enum UserRoles {
   USER
 }
 
+
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  username      String?
-  name          String?
-  email         String?    @unique
-  emailVerified DateTime?  @map("email_verified")
-  image         String?
-  mobilenumber  String?
-  password      String?
-  role          UserRoles  @default(USER)
-  accounts      Account[]
-  category      Category[]  @relation("UserCategory")
-  expenses      Expense[]  @relation("UserExpenses")
+  id                    String     @id @default(auto()) @map("_id") @db.ObjectId
+  username              String?
+  name                  String?
+  email                 String?    @unique
+  emailVerified         DateTime?  @map("email_verified")
+  image                 String?
+  mobilenumber          String?
+  password              String?
+  role                  UserRoles  @default(USER)
+  accounts              Account[]
+  category              Category[]  @relation("UserCategory")
+  expenses              Expense[]  @relation("UserExpenses")
+  isTwofactorEnabled    Boolean    @default(false)
+  twoFactorConfirmation TwoFactorConfirmation? @relation("UserTwoFactorConfirmation")
 
   @@map("users") // Maps to 'users' collection in MongoDB
 }
+
 
 model Account {
   id                String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -65,7 +69,7 @@ model Expense {
   updatedAt   DateTime @updatedAt
 
   @@index([userId], map: "userId_idx")        // Index for quick querying by userId
-  @@index([categoryId], map: "categoryId_idx") // Index for quick querying by categoryId
+  @@index([categoryId], map: "categoryname_idx") // Index for quick querying by categoryId
   @@map("expenses") // Maps to 'expenses' collection in MongoDB
 }
 
@@ -79,7 +83,7 @@ model Category {
   updatedAt DateTime  @updatedAt
 
   @@map("categories") // Maps to 'categories' collection in MongoDB
-  @@unique([name])
+  @@unique([name, userId])
 }
 
 model VerificationToken {
@@ -101,4 +105,21 @@ model ResetVerificationToken {
 
   @@unique([email, token])
   @@map("resetverificationtokens")
+}
+
+model TwoFactorToken {
+  id      String    @id @default(auto()) @map("_id")  @db.ObjectId
+  email   String
+  token   String    @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id      String    @id @default(auto())  @map("_id") @db.ObjectId
+  userId  String    @db.ObjectId
+  user    User      @relation("UserTwoFactorConfirmation", fields: [userId], references: [id])
+
+  @@unique([userId])
 }

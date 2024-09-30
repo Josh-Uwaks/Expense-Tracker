@@ -1,19 +1,23 @@
+"use client"
+
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Category, Expense } from "@/app/types";
-import  { getUserCategories, getUserExpense, addCategory as apiAddCategory } from "@/lib/ApiRequests/requests";
+import { Category, Expense, CategoryResponse } from "@/app/types";
+import  { getUserCategories, getUserExpense, addCategory as apiAddCategory, addExpense as apiAddExpense } from "@/lib/ApiRequests/requests";
+import {useTransition} from 'react'
 
 interface ContextType {
     session: Session | null;
-    expense: Expense[];
+    expenseData: Expense[];
     categories: Category[];
     error: string | null;
     userId: string | undefined;
-    refreshExpenses: () => void;
-    refreshCategories: () => void;
-    getTotalExpense: () => number; // Ensure this is correctly defined
+    getTotalExpense: () => number; 
     addCategory: (name: string, userId: string) => Promise<void>
+    addExpense: (amount: number, description: string, categoryname: string, userId: string, date: string) => Promise<void>
+    isPending: boolean;
+    isLoading: boolean
 }
 
 const AppContext = createContext<ContextType | undefined>(undefined);
@@ -21,19 +25,21 @@ const AppContext = createContext<ContextType | undefined>(undefined);
 export function ContextWrapper({ children }: { children: React.ReactNode }) {
     // User data
     const { data: session } = useSession();
-    console.log(session)
 
     // Expense data
-    const [expense, setExpenses] = useState<Expense[]>([]);
+    const [expenseData, setExpenseData] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+
     const userId = session?.user?.id;
 
-    const fetchExpenses = async () => {
+    const fetchExpenseData = async () => {
         try {
             if (userId) {
-                const data = await getUserExpense(userId);
-                setExpenses(data.getExpenseId);
+               const response = await getUserExpense(userId);
+               setExpenseData(response.expense)
             }
         } catch (err) {
             setError((err as Error).message || 'An error occurred');
@@ -43,42 +49,69 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
     const fetchCategories = async () => {
         try {
             if (userId) {
-                const data = await getUserCategories(userId);
-                setCategories(data.getCategoryById);
+               const response = await getUserCategories(userId);
+               setCategories(response.category)
             }
         } catch (error) {
             setError((error as Error).message || 'An error occurred');
         }
     };
 
-    const getTotalExpense = () => {
-        return expense.reduce((total, item) => total + item.amount, 0);
-    };
-
-    const addCategory = async (name: string, userId: string) => {
-        try {
-            const response = await apiAddCategory(name, userId); // Call the API with both parameters
-            if (response.status === 201) {
-                const newCategory = response?.data?.newCategory; // Adjust this according to your response structure
-                setCategories((prev) => [...prev, newCategory]); // Add the new category to the state
-            } else {
-                setError(response?.data?.message); // Set error message from the response
-            }
-        } catch (error) {
-            setError((error as Error).message || 'An error occurred while adding the category.');
-        }
-    };
-    
-
     useEffect(() => {
         if (userId) {
-            fetchExpenses();
+            fetchExpenseData();
             fetchCategories();
         }
     }, [userId]);
 
+    const getTotalExpense = () => {
+        return expenseData.reduce((total, item) => total + item.amount, 0);
+    };
+
+    const addExpense = async (amount: number, description: string, categoryname: string, userId: string, date: string): Promise<void> => { // Ensure return type is Promise<void>
+        setIsLoading(true)
+        try {
+            const response = await apiAddExpense(amount, description, categoryname, userId, date)
+            if(response.status === 201) {
+                const expense = response?.data?.expense
+                setExpenseData((prev) => [...prev, expense])
+            }
+
+            startTransition(() => {
+                fetchExpenseData()
+            })
+        } catch (error) {
+            console.log(error)
+            setError((error as Error).message || 'An error occurred while adding the expense.');
+        } finally {
+            setIsLoading(false)
+        }
+    };
+
+    const addCategory = async (name: string, userId: string) => {
+        setIsLoading(true)
+        try {
+            const response = await apiAddCategory(name, userId); // Call the API with both parameters
+
+            if(response.status === 201) {
+                const newCategory = response?.data?.newCategory;
+                setCategories((prev) => [...prev, newCategory])
+            }
+
+            startTransition(() => {
+                fetchCategories()
+            })
+           
+        } catch (error) {
+            console.log(error)
+            setError((error as Error).message || 'An error occurred while adding the category.');
+        } finally {
+            setIsLoading(false)
+        }
+    };
+
     return (
-        <AppContext.Provider value={{ session, expense, categories, error, userId, addCategory, refreshCategories: fetchCategories, refreshExpenses: fetchExpenses, getTotalExpense }}>
+        <AppContext.Provider value={{ session, expenseData, categories, isLoading, error, userId, isPending, addCategory, addExpense, getTotalExpense }}>
             {children}
         </AppContext.Provider>
     );

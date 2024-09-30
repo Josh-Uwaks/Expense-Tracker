@@ -19,7 +19,7 @@ export type Category = {
 
 export type CategoryResponse = {
   message: string,
-  getCategoryById: Category[]
+  category: Category[]
 }
 
 // types.ts
@@ -37,7 +37,7 @@ export type Expense = {
   
 export type ExpenseResponse = {
     message: string,
-    getExpenseId: Expense[];
+    expense: Expense[];
 };
 
 

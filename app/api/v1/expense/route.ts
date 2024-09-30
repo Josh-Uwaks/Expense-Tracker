@@ -1,30 +1,38 @@
-import { NextResponse} from 'next/server'
+import { NextResponse, NextRequest} from 'next/server'
 import prisma from '@/prisma'
 import { auth } from '@/app/helpers/auth';
+import { checkRateLimit } from '@/lib/rateLimiter/rateLimiter';
 
 
 type ExpenseInput = {
     amount: number;       // Assuming the amount is a number
     description?: string; // Optional field (if it can be missing)
     userId: string;       // Assuming userId is a string
-    categoryId: string;   // Assuming categoryId is a string
+    categoryname: string;   // Assuming categoryId is a string
     date: string
   }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+
+  const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+  // Apply rate limiting
+  const isAllowed = await checkRateLimit(ip);
+  if (!isAllowed) {
+    return NextResponse.json(
+      { message: 'Rate limit exceeded. Please try again later.' },
+      { status: 429 }
+    );
+  }
     try {
-      const { amount, description, userId, categoryId, date }: ExpenseInput = await request.json();
+      const { amount, description, userId, categoryname, date }: ExpenseInput = await request.json();
 
-      // const session = await auth()
+      console.log(amount, description, userId, categoryname, date)
 
-      // if(!session || session.user?.id) {
-      //     return NextResponse.json({ message: "Unauthorized: You must be logged in." }, { status: 401 });
-      // }
-  
-      // Validate required fields
-      if (!amount || !userId || !categoryId || !date) {
-        return NextResponse.json({ message: "All fields are required." }, { status: 400 });
-      }
+      if(!amount) return NextResponse.json({message: "kindly provide the amount field"}, {status: 400})
+      if(!userId) return NextResponse.json({message: "kindly provide the userId"}, {status: 400})
+      if(!categoryname) return NextResponse.json({message: "kindly provide the category"}, {status: 400})
+      if(!date) return NextResponse.json({message: "kindly provide the date"}, {status: 400})
+
 
     // Check if the user exists in the database
       const userExist = await prisma.user.findFirst({
@@ -38,12 +46,12 @@ export async function POST(request: Request) {
     }
 
     // Check if categoryId exists in the database
-       const categoryExists = await prisma.category.findUnique({
-        where: { id: categoryId }
+    const categoryExists = await prisma.category.findFirst({
+        where: {name: categoryname}
     });
     
     if (!categoryExists) {
-        return NextResponse.json({ message: "Invalid category ID." }, { status: 400 });
+        return NextResponse.json({ message: "Invalid category." }, { status: 400 });
     }
    
       // Create a new expense
@@ -51,8 +59,8 @@ export async function POST(request: Request) {
         data: {
           amount,
           description,
-          userId,
-          categoryId,
+          user: { connect: { id: userId } }, // Connect existing user
+          category: { connect: { id: categoryExists.id } },
           date
         }
       });

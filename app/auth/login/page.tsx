@@ -9,7 +9,7 @@ import {useForm, SubmitHandler} from 'react-hook-form'
 import { LoginSchema, LoginInput } from "@/app/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginAction } from "@/app/actions/login";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { defaultLoginRedirect } from "@/route";
 import { Card } from "@/components/ui/card";
@@ -22,6 +22,8 @@ export default function Login(){
     const {toast} = useToast()
     const searchParams = useSearchParams()
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
+
+    const [show2FA, setShow2FA] = useState(false)
     const [isPending, startTransition] = useTransition()
  
 
@@ -32,20 +34,44 @@ export default function Login(){
     const onSubmit: SubmitHandler<LoginInput> = async(data) => {
 
         startTransition(async () => {
-            const response = await LoginAction(data);
+            LoginAction(data)
+            .then((data) => {
+                if(data.error) {
+                    toast({
+                        variant: "destructive",
+                        title: "Error",
+                        description:  data.error || data.details|| "An unexpected error occurred",
+                    });
+                }
 
-            console.log(response)
-            // Check if response has success property
-            if(response?.success) {
-                window.location.href = defaultLoginRedirect; 
-                reset()
-            } else if (response?.error) {
+                if(data.success) {
+                    reset()
+                    // toast({
+                    //     variant: 'default',
+                    //     title: "Successful SignIn",
+                    //     description: data.success
+                    // })
+                    // window.location.href = defaultLoginRedirect; 
+                }
+
+                if(data.twoFactor) {
+                    toast({
+                        variant:'default',
+                        title: "2FA Authentication"
+                    })
+                    setShow2FA(true)
+                }
+            })
+
+            .catch((error) => {
                 toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: response.error || response.details || "An unexpected error occurred",
-                });
-            }
+                    variant: 'destructive',
+                    title: 'Something went wrong.',
+                    description: error
+                })
+            })
+
+
         });
     }
 
@@ -65,31 +91,50 @@ export default function Login(){
                     <Card className="p-8 bg-white rounded-[16px] min-w-[430px] shadow-md border-none">
                         <h1 className="text-2xl font-bold">Sign In</h1>
                         <p>to continue with our Expense Tracker</p>
+                       
+                              <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
 
-                        <form className="my-6" onSubmit={handleSubmit(onSubmit)}>
-                            <div>
-                            <Label htmlFor="email">Email</Label>
-                            <Input {...register('email')} type="email" id="email" className="mt-1"/>
-                            </div>
+                              {show2FA && (
+                                <>
+                                    <form>
+                                        <div>
+                                            <Label htmlFor="code">Code</Label>
+                                            <Input {...register('code')} type="text" id="code" className="mt-1" placeholder="2FA Code"/>
+                                        </div>
+                                        {errors.code && <div>{errors.code.message}</div>}
 
-                            {errors.email && <div className="text-red-500 mt-3">{errors.email.message}</div>}
+                                    </form>
+                                </>
+                                )}
 
-                            <div className="my-3">
-                                <Label htmlFor="password">Password</Label>
-                                <Input {...register('password')} type="password"  id="password" className="mt-1"/>
-                            </div>
+                                {!show2FA && (
+                                    <>
+                                    <div>
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input {...register('email')} type="email" id="email" className="mt-1"/>
+                                    </div>
 
-                            <div className="flex justify-end">
-                                <Link href={'/auth/reset'}>forgot password?</Link>
-                            </div>
+                                    {errors.email && <div className="text-red-500 mt-3">{errors.email.message}</div>}
 
-                            {errors.password && <div className="text-red-500">{errors.password.message}</div>}
-                            {urlError}
+                                    <div className="my-3">
+                                        <Label htmlFor="password">Password</Label>
+                                        <Input {...register('password')} type="password"  id="password" className="mt-1"/>
+                                    </div>
 
-                            <Button className="w-full mt-6" disabled={isPending || isSubmitting}>
-                                {isPending || isSubmitting ? 'Submitting...' : 'Submit'}
-                            </Button>
-                        </form>
+                                    <div className="flex justify-end">
+                                        <Link href={'/auth/reset'}>forgot password?</Link>
+                                    </div>
+
+                                    {errors.password && <div className="text-red-500">{errors.password.message}</div>}
+                                    {urlError}
+                                    </>
+                                )} 
+
+                                    <Button className="w-full mt-6" disabled={isPending || isSubmitting}>
+                                     {show2FA ? "Confirm" : (isPending || isSubmitting ? 'Submitting...' : 'Submit') }
+                                    </Button>
+                                </form>
+                        
 
 
                         <div className="relative mt-12 pb-12 border-t border-input"> 

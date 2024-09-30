@@ -5,6 +5,7 @@ import { getUserById } from "@/lib/ApiRequests/requests";
 import authConfig from "@/auth.config";
 import { UserRoles } from "@prisma/client";
 import { AdapterUser } from "next-auth/adapters"; // Import AdapterUser
+import { getTwoFactorConfirmation } from "@/lib/tokenRequests/TwoFactorToken";
 
 // Define a custom user type
 type CustomUser = AdapterUser & {
@@ -37,13 +38,38 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
 
     async signIn({user, account}) {
 
+      // if the provider is not equal to credentials then true
       if(account?.provider !== "credentials") return true
 
+      // to get the signed in user information.
       const existingUser = await getUserById(user.id)
 
+      // to confirm if the mail is verified
       if(!existingUser?.emailVerified) return false
+
+      // to confirm the 2FA
+      if(existingUser.isTwofactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmation(existingUser.id)
+        if(!twoFactorConfirmation) return false
+
+        // to delete the 2fa
+        await prisma.twoFactorConfirmation.delete({
+          where: {
+            id: twoFactorConfirmation.id
+          }
+        })
+
+      }
       
       return true
+
+      // EXPLANATIONS.
+      // 1. We first check if the provider is not credentials reason is because we assume providers like google, github and all handles the verification process correctly.
+      // 2. we then proceed to extract the users information using the getUserById function.
+      // 3. after extracting user's info we check if the email is verified.
+      // 4. we also check if the 2fa is enabled because we set this as boolean in the schema.
+      // 5. if its true then we execute the block of code situated in it in this case we confirm using the getTwoFactorConfirmation function, if the confirmation is successful we automatically delete the the user from the confirmation schema.
+      
     },
 
     async session({token, session}){

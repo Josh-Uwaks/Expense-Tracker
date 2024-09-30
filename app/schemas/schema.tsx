@@ -18,7 +18,8 @@ export const LoginSchema = z.object({
     email: z.string().email(),
     password: z.string()
     .min(3, 'Password must not be lesser than 3')
-    .max(16, 'Password must not be greater than 16')
+    .max(16, 'Password must not be greater than 16'),
+    code: z.optional(z.string())
 })
 
 export const ResetEmailSchema = z.object({
@@ -47,6 +48,7 @@ export const ReportDateSchema = z.object({
         required_error: "Second date entry is also required"
     })
 })
+
 
 export type DateSchema = z.infer<typeof ReportDateSchema>
 export type RegistrationInput = z.infer<typeof FormSchema>

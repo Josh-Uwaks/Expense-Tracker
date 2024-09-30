@@ -5,8 +5,8 @@ import { signIn } from '../helpers/auth'
 import {AuthError} from 'next-auth'
 import { generateVerificationToken } from '@/lib/tokenRequests/verificationTokenRequests'
 import { getUserByEmail } from '@/lib/ApiRequests/requests'
-import { sendVerificationMail } from '@/lib/mail/mail'
-import { defaultLoginRedirect } from '@/route'
+import { sendTwoFactorMail, sendVerificationMail } from '@/lib/mail/mail'
+import { generateTwoFactorToken, getTwoFactorConfirmation, getTwoFactorTokenByEmail } from '@/lib/tokenRequests/TwoFactorToken'
 
 export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
     const validateFields = LoginSchema.safeParse(values)
@@ -15,7 +15,7 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
         return {error: 'Invalid fields', details: validateFields.error.errors}
     }
 
-    const {email, password} = validateFields.data
+    const {email, password, code} = validateFields.data
 
 
     const existingUser = await getUserByEmail(email)
@@ -28,6 +28,54 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
         const verification = await generateVerificationToken(existingUser.email)
         await sendVerificationMail(verification.email, verification.token)
         return {success: "Confirmation Email has been sent"}
+    }
+
+    if(existingUser.isTwofactorEnabled && existingUser.email) {
+        if (code) {
+            const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email)
+            if(!twoFactorToken) {
+                return {error: "invalid code - 1"}
+            }
+
+            if(twoFactorToken.token !== code) {
+                return {error: "Invalid code - 2"}
+            }
+
+            const hasExpired = new Date(twoFactorToken.expires) < new Date()
+
+            if(hasExpired) {
+                return {error: 'Token has Expired'}
+            }
+
+            await prisma?.twoFactorToken.delete({
+                where: {
+                    id: twoFactorToken.id
+                }
+            })
+
+            const existingConfirmation = await getTwoFactorConfirmation(existingUser.id)
+
+            if(existingConfirmation) {
+                await prisma?.twoFactorConfirmation.delete({
+                    where: {
+                        id: existingConfirmation.id
+                    }
+                })
+            }
+
+            await prisma?.twoFactorConfirmation.create({
+                data: {
+                    userId: existingUser.id
+                }
+            })
+            
+
+        } else {
+            const twoFactorToken = await generateTwoFactorToken(existingUser.email)
+            await sendTwoFactorMail(twoFactorToken.email, twoFactorToken.token)
+    
+            return {twoFactor: true}
+        }
     }
 
     try {

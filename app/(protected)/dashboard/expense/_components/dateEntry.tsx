@@ -32,7 +32,7 @@ export default function DateEntry({classname}: {classname?: string}) {
       })
 
       const {filteredData, handleFilter} = FilterByDateRangeHook(data)
-      console.log(filteredData)
+    //   console.log(filteredData)
     
       function onSubmit(data: DateSchema) {
 

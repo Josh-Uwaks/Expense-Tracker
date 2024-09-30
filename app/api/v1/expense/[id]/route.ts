@@ -19,22 +19,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   const { id } = params; // User ID to filter expenses
 
   try {
-
-    // const session = await auth()
-
-    // if(!session || session.user?.id) {
-    //     return NextResponse.json({ message: "Unauthorized: You must be logged in." }, { status: 401 });
-    // }
-    
     // Fetch all expenses created by the specified user ID
     const expenses = await prisma.expense.findMany({
       where: {
-        id: id,
+        userId: id,
       }
     });
-
-    console.log(expenses)
-
 
     // Return the fetched expenses with a success message
     return NextResponse.json(
@@ -66,12 +56,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       // Parse the request body to get the updated expense data
       const body = await request.json();
       const { amount, description, userId, categoryId }: ExpenseInput = body;
-
-      // const session = await auth()
-
-      // if(!session || session.user?.id) {
-      //     return NextResponse.json({ message: "Unauthorized: You must be logged in." }, { status: 401 });
-      // }
   
       // Create an object to hold the fields to update
       const updateData: any = {};

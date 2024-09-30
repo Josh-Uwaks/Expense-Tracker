@@ -37,12 +37,12 @@ export async function addCategory(name: string, userId: string) {
     }
 }
 
-export async function submitExpense(amount: number, description: string, category: string, userId: string, date: string) {
+export async function addExpense(amount: number, description: string, categoryname: string, userId: string, date: string) {
     try {
         const response = await axios.post('/api/v1/expense', {
             amount,
             description,
-            category,
+            categoryname,
             userId,
             date
         });

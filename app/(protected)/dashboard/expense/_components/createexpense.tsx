@@ -1,4 +1,4 @@
-
+"use client"
 import {
     Dialog,
     DialogContent,
@@ -7,38 +7,102 @@ import {
     DialogTitle,
     DialogTrigger,
   } from "@/components/ui/dialog"
-
-import { Calendar } from "@/components/ui/calendar"
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
-
-import { Calendar as CalendarIcon } from "lucide-react" 
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { format } from "date-fns"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import React, { useState } from "react"
+import React, { ChangeEvent, useState } from "react"
 import { Plus } from 'lucide-react';
 import {Separator} from '@/components/ui/separator'
+import DatePicker from "./datepicker"
+import SelectCategory from "./selectCategory"
+import SignedUserClient from "@/hooks/signedUserClient"
+import { toast } from "@/hooks/use-toast"
 import { useAppContext } from "@/app/context/appcontext"
 
 
+const CreateExpense = () => {
 
-const CreateExpense = async () => {
+    const user = SignedUserClient()
+    const {categories, addCategory, addExpense, isPending, isLoading, error} = useAppContext()
+
+    console.log(error)
+ 
+    const [category, setCategory] = useState<string>('')
+    const [expenseData, setExpenseData] = useState({
+        amount: '',
+        description: '',
+        category: '',
+        date: ''
+    })
+
+    console.log(expenseData)
+
+    const AddCategory = async (event: React.MouseEvent<HTMLElement>) => {
+        event.preventDefault()
+
+        if(user?.id && category) {
+           try {
+            await addCategory(category, user?.id)
+            toast({
+                title: "Success",
+                description: "Category added and refreshed successfully"
+            })
+            setCategory("")
+           } catch (error) {
+            console.error('Error adding category', error)
+            toast({
+                title: "Error",
+                description: `${error}`,
+                variant: 'destructive'
+            })
+           }
+        }
+
+    }
+
+    const AddExpense = async (event: React.MouseEvent<HTMLElement>) => {
+        event.preventDefault()
+       
+        if(user?.id && expenseData) {
+            try {
+                await addExpense(Number(expenseData.amount), expenseData.description, expenseData.category, user?.id, expenseData.date)
+                toast({
+                    title: "Success",
+                    description: "Expense added and refreshed successfully"
+                })
+                setExpenseData({
+                    amount: '',
+                    description: '',
+                    category: '',
+                    date: ''
+                })
+            } catch (error) {
+                console.log('Error adding Expense', error)
+                toast({
+                    title: 'Error',
+                    description: `${error}`,
+                    variant: 'destructive'
+                })
+            }
+        }
+    }
+
+    const handleFormData = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {name, value} = event.target
+
+        setExpenseData({
+            ...expenseData,
+            [name]: value
+        })
+    }
+
+    const handleDateChange = (selectedDate: Date | undefined) => {
+        setExpenseData({
+            ...expenseData,
+            date: selectedDate ? selectedDate.toISOString() : '',
+        });
+    };
 
 
     return (
@@ -64,44 +128,42 @@ const CreateExpense = async () => {
                     <div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
-                            <Input type="text" id="amount" placeholder="e.g 5000" className="mt-1 md:mt-0 lg:w-[500px]"/>
+                            <Input type="text" id="amount" placeholder="e.g 5000" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
                             <Label className="lg:w-[100px] text-left">Date*</Label>
-                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0"/>
+                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0"   selectedDate={expenseData.date ? new Date(expenseData.date) : undefined} 
+                    onDateChange={handleDateChange} />
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label className="lg:w-[100px] text-left">Category*</Label>
-                            <SelectCategory classname='w-full lg:w-[500px] mt-1 md:mt-0'/>
+                            <SelectCategory 
+                                classname='w-full lg:w-[500px] mt-1 md:mt-0'
+                                name="category" 
+                                value={expenseData.category} 
+                                category={categories.map((item) => ({label: item.name, value: item.id}))}
+                                onChange={(value) => setExpenseData({ ...expenseData, category: value })} 
+                            />
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="description" className="lg:w-[100px] text-left">Description*</Label>
-                            <Textarea placeholder="Description here..." className="mt-1 md:mt-0 resize-none w-full lg:w-[500px] h-[200px]"/>
+                            <Textarea placeholder="Description here..." className="mt-1 md:mt-0 resize-none w-full lg:w-[500px] h-[200px]" name="description" value={expenseData.description} onChange={handleFormData}/>
                         </div>
                     </div>
                     
 
                     <div>
-                        {/* <div className="flex flex-col gap-2 md:flex-row md:items-center">
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center">
                             <Label className="lg:w-[100px]">Categories</Label>
-                            <Input className="mt-1 md:mt-0 lg:w-[500px]" value={addCat} onChange={(e) => setAddCat(e.target.value)} name="addCat"/>
-                            <Button onClick={AddCategory}>Add</Button>
-                        </div> */}
+                            <Input className="mt-1 md:mt-0 lg:w-[500px]" value={category} onChange={(e) => setCategory(e.target.value)} name="addCat"/>
+                            <Button onClick={AddCategory} disabled={isPending || isLoading}>{isPending || isLoading ? "Adding..." : "Add"}</Button>
+                        </div>
                     </div>
                   </div>
 
                   <div className="mt-3">
-                   
-
-                    
-
-                    
-
-                    
-
-
                     <div className="flex gap-4 justify-end">
-                        <Button className="mb-2">Save</Button>
+                        <Button className="mb-2" onClick={AddExpense}>Save</Button> 
                         <Button className="" variant={'ghost'}>Clear</Button>
                     </div>
 
@@ -119,50 +181,3 @@ const CreateExpense = async () => {
 }
 
 export default CreateExpense
-
-
-
-
-const DatePicker = ({classname}: {classname?: string}) => {
-     const [date, setDate] = React.useState<Date>()
-
-     return (
-        <Popover>
-        <PopoverTrigger asChild>
-            <Button
-            variant={"outline"}
-            className={cn(
-                ` ${classname} justify-start text-left font-normal mt-1",
-                !date && "text-muted-foreground`
-            )}
-            >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? format(date, "PPP") : <span>Pick a date</span>}
-            </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
-            <Calendar
-            mode="single"
-            selected={date}
-            onSelect={setDate}
-            initialFocus
-            />
-        </PopoverContent>
-        </Popover>
-     )
-}
-
-const SelectCategory = ({classname}: {classname: string}) => {
-    return (
-        <Select>
-            <SelectTrigger className={`${classname} mt-1`}>
-                <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-            </SelectContent>
-        </Select>
-    )
-}

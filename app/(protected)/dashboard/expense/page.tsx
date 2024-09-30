@@ -8,12 +8,12 @@ import { Ellipsis } from 'lucide-react';
 import DateEntry from './_components/dateEntry'
 import CreateExpense from './_components/createExpense'
 import { DataTableDemo } from './_components/reportTable'
-
+import { useCurrentUser } from '@/hooks/useSession'
 
 
 const page = () => {
 
-
+  const user = useCurrentUser()
 
   return (
     <div className='min-h-screen'>
@@ -34,12 +34,10 @@ const page = () => {
           </div>
         </div>
 
-
         <div>
           <DataTableDemo/>
         </div>
       </div>
-
       
     </div>
   )

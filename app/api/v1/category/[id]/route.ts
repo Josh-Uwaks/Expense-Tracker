@@ -22,9 +22,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   try {
     
     // Fetch all expenses created by the specified user ID
-    const category = await prisma.category.findUnique({
+    const category = await prisma.category.findMany({
       where: {
-        id: id,
+        userId: id,
       }
     });
 

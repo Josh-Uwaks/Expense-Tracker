@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from '@/components/ui/card'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import {PuffLoader} from 'react-spinners'
 import { useSearchParams } from 'next/navigation'
 import { tokenVerification } from '@/app/actions/tokenVerification'
@@ -57,7 +57,7 @@ const page = () => {
 
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
 
         <div className="relative flex items-end bg-gray-900 lg:col-span-6 lg:h-full">
@@ -89,7 +89,7 @@ const page = () => {
         </div>
 
     </div>
-    </>
+    </Suspense>
   )
 }
 

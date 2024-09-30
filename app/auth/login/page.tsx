@@ -9,7 +9,7 @@ import {useForm, SubmitHandler} from 'react-hook-form'
 import { LoginSchema, LoginInput } from "@/app/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginAction } from "@/app/actions/login";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { defaultLoginRedirect } from "@/route";
 import { Card } from "@/components/ui/card";
@@ -76,7 +76,7 @@ export default function Login(){
     }
 
     return (
-        <>
+        <Suspense fallback={<div>Loading...</div>}>
             <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
 
                 <div className="relative flex items-end bg-gray-900 lg:col-span-6 lg:h-full">
@@ -150,6 +150,6 @@ export default function Login(){
                     </Card>
                 </div>
             </div>
-        </>
+        </Suspense>
     )
 }

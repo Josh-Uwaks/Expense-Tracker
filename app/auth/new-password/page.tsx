@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
-import { useTransition } from "react"
+import { Suspense, useTransition } from "react"
 import {useForm, SubmitHandler} from 'react-hook-form'
 import { useSearchParams } from "next/navigation"
 import * as z from 'zod'
@@ -61,7 +61,7 @@ function NewPassword() {
 
 
     return (
-        <>
+        <Suspense fallback={<div>Loading....</div>}>
         <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
 
             <div className="relative flex items-end bg-gray-900 lg:col-span-6 lg:h-full">
@@ -105,7 +105,7 @@ function NewPassword() {
             </div>
 
         </div>
-        </>
+        </Suspense>
     )
 }
 

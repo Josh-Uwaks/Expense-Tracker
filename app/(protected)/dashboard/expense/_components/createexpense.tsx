@@ -24,9 +24,7 @@ import { useAppContext } from "@/app/context/appcontext"
 const CreateExpense = () => {
 
     const user = SignedUserClient()
-    const {categories, addCategory, addExpense, isPending, isLoading, error} = useAppContext()
-
-    console.log(error)
+    const {categories, addCategory, addExpense, isCategoryLoading, isExpenseLoading, isCategoryPending, isExpensePending} = useAppContext()
  
     const [category, setCategory] = useState<string>('')
     const [expenseData, setExpenseData] = useState({
@@ -36,27 +34,12 @@ const CreateExpense = () => {
         date: ''
     })
 
-    console.log(expenseData)
-
     const AddCategory = async (event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault()
 
         if(user?.id && category) {
-           try {
             await addCategory(category, user?.id)
-            toast({
-                title: "Success",
-                description: "Category added and refreshed successfully"
-            })
             setCategory("")
-           } catch (error) {
-            console.error('Error adding category', error)
-            toast({
-                title: "Error",
-                description: `${error}`,
-                variant: 'destructive'
-            })
-           }
         }
 
     }
@@ -65,26 +48,13 @@ const CreateExpense = () => {
         event.preventDefault()
        
         if(user?.id && expenseData) {
-            try {
-                await addExpense(Number(expenseData.amount), expenseData.description, expenseData.category, user?.id, expenseData.date)
-                toast({
-                    title: "Success",
-                    description: "Expense added and refreshed successfully"
-                })
-                setExpenseData({
-                    amount: '',
-                    description: '',
-                    category: '',
-                    date: ''
-                })
-            } catch (error) {
-                console.log('Error adding Expense', error)
-                toast({
-                    title: 'Error',
-                    description: `${error}`,
-                    variant: 'destructive'
-                })
-            }
+            await addExpense(Number(expenseData.amount), expenseData.description, expenseData.category, user?.id, expenseData.date)
+            setExpenseData({
+                amount: '',
+                description: '',
+                category: '',
+                date: ''
+            })
         }
     }
 
@@ -128,7 +98,7 @@ const CreateExpense = () => {
                     <div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
-                            <Input type="text" id="amount" placeholder="e.g 5000" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
+                            <Input type="text" id="amount" placeholder="enter amount" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
                             <Label className="lg:w-[100px] text-left">Date*</Label>
@@ -156,14 +126,14 @@ const CreateExpense = () => {
                         <div className="flex flex-col gap-2 md:flex-row md:items-center">
                             <Label className="lg:w-[100px]">Categories</Label>
                             <Input className="mt-1 md:mt-0 lg:w-[500px]" value={category} onChange={(e) => setCategory(e.target.value)} name="addCat"/>
-                            <Button onClick={AddCategory} disabled={isPending || isLoading}>{isPending || isLoading ? "Adding..." : "Add"}</Button>
+                            <Button onClick={AddCategory} disabled={isCategoryPending || isCategoryLoading}>{isCategoryLoading || isCategoryPending ? "Adding..." : "Add"}</Button>
                         </div>
                     </div>
                   </div>
 
                   <div className="mt-3">
                     <div className="flex gap-4 justify-end">
-                        <Button className="mb-2" onClick={AddExpense}>Save</Button> 
+                        <Button className="mb-2" onClick={AddExpense} disabled={isExpenseLoading || isExpensePending}>{isExpenseLoading || isExpensePending ? 'Saving...' : 'Save'}</Button> 
                         <Button className="" variant={'ghost'}>Clear</Button>
                     </div>
 

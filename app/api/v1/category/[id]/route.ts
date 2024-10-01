@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/index";
-import { NextApiRequest } from "next";
-import { connectDB } from "@/app/helpers/servers-helpers";
+import { checkRateLimit } from "@/lib/rateLimiter/rateLimiter";
 
 // Define a type for the request parameters
 type Params = {
@@ -16,7 +15,18 @@ type Params = {
 //   }
 
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+
+  const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+  // Apply rate limiting
+  const isAllowed = await checkRateLimit(ip);
+  if (!isAllowed) {
+    return NextResponse.json(
+      { message: 'Rate limit exceeded. Please try again later.' },
+      { status: 429 }
+    );
+  }
+
   const { id } = params; // User ID to filter expenses
 
   try {
@@ -28,12 +38,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
       }
     });
 
-    console.log(category)
-
-
     // Return the fetched expenses with a success message
     return NextResponse.json(
-      { message: 'User category fetched successfully', category },
+      { message: 'User Category Data Has Been Fetched Successfully', category },
       { status: 200 }
     );
   } catch (error) {

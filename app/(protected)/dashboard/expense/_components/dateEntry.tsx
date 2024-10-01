@@ -22,7 +22,8 @@ import { Button } from '@/components/ui/button'
 import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
 import FilterByDateRangeHook from '@/hooks/filterhook'
-import {data} from '@/app/helpers/index'
+import { useAppContext } from '@/app/context/appcontext'
+// import {data} from '@/app/helpers/index'
 
 
 export default function DateEntry({classname}: {classname?: string}) {
@@ -31,7 +32,10 @@ export default function DateEntry({classname}: {classname?: string}) {
         resolver: zodResolver(ReportDateSchema),
       })
 
-      const {filteredData, handleFilter} = FilterByDateRangeHook(data)
+      const {expenseData} = useAppContext()
+      console.log(expenseData)
+
+    //   const {filteredData, handleFilter} = FilterByDateRangeHook(data)
     //   console.log(filteredData)
     
       function onSubmit(data: DateSchema) {
@@ -44,7 +48,7 @@ export default function DateEntry({classname}: {classname?: string}) {
             })
             return
         } else {
-            handleFilter(data.first_date_entry, data.second_date_entry)
+            // handleFilter(data.first_date_entry, data.second_date_entry)
         }
     
         toast({

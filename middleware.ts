@@ -44,9 +44,9 @@ export default auth((req) => {
 
   
   // Corrected condition to check if pathname is not in publicRoutes
-  if(!isLoggedIn && !publicRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl.origin).toString())
-  }
+  // if(!isLoggedIn && !publicRoutes.includes(pathname)) {
+  //   return NextResponse.redirect(new URL("/auth/login", nextUrl.origin).toString())
+  // }
 
   return NextResponse.next()
 })

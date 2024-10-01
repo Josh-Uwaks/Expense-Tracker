@@ -52,14 +52,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Create a new expense
-      const newCategory = await prisma.category.create({
+      const category = await prisma.category.create({
         data: {
           name: lowerCase,
           userId
         }
       });
   
-      return NextResponse.json({ message: "Category created successfully", newCategory }, { status: 201 });
+      return NextResponse.json({ message: "Category created successfully", category }, { status: 201 });
     } catch (error) {
       console.error(error);
       return NextResponse.json({ message: "An error occurred while creating the category." }, { status: 500 });

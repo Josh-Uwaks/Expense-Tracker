@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Category, Expense, CategoryResponse } from "@/app/types";
 import  { getUserCategories, getUserExpense, addCategory as apiAddCategory, addExpense as apiAddExpense } from "@/lib/ApiRequests/requests";
 import {useTransition} from 'react'
+import { toast } from "@/hooks/use-toast";
 
 interface ContextType {
     session: Session | null;
@@ -14,10 +15,12 @@ interface ContextType {
     error: string | null;
     userId: string | undefined;
     getTotalExpense: () => number; 
-    addCategory: (name: string, userId: string) => Promise<void>
-    addExpense: (amount: number, description: string, categoryname: string, userId: string, date: string) => Promise<void>
-    isPending: boolean;
-    isLoading: boolean
+    addCategory: (name: string, userId: string) => Promise<void>;
+    addExpense: (amount: number, description: string, categoryname: string, userId: string, date: string) => Promise<void>;
+    isExpenseLoading: boolean;
+    isCategoryLoading: boolean;
+    isExpensePending: boolean;
+    isCategoryPending: boolean;
 }
 
 const AppContext = createContext<ContextType | undefined>(undefined);
@@ -30,8 +33,10 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
     const [expenseData, setExpenseData] = useState<Expense[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [isPending, startTransition] = useTransition()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isExpensePending, setIsExpenseTransition] =useTransition()
+    const [isCategoryPending, setIsCategoryTransition] = useTransition()
+    const [isExpenseLoading, setIsExpenseLoading] = useState<boolean>(false)
+    const [isCategoryLoading, setIsCategoryLoading] = useState<boolean>(false)
 
     const userId = session?.user?.id;
 
@@ -39,10 +44,21 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
         try {
             if (userId) {
                const response = await getUserExpense(userId);
-               setExpenseData(response.expense)
+               setExpenseData(response.data.expense)
+               if (response.status === 200) {
+                toast({
+                    variant: 'default',
+                    title: 'Success',
+                    description: 'User Expense Data Has Been Fetched Successfully'
+                })
+               }
             }
         } catch (err) {
-            setError((err as Error).message || 'An error occurred');
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description:  (err as Error).message ? `${(err as Error).message} (Expense fetch failed)` : 'An error occurred fetching expense'
+            })
         }
     };
 
@@ -50,10 +66,21 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
         try {
             if (userId) {
                const response = await getUserCategories(userId);
-               setCategories(response.category)
+               setCategories(response.data.category)
+               if(response.status === 200) {
+                toast({
+                    variant: 'default',
+                    title: 'Success',
+                    description: 'User Category Data Has Been Fetched Successfully'
+                })
+               }
             }
         } catch (error) {
-            setError((error as Error).message || 'An error occurred');
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description:  (error as Error).message ? `${(error as Error).message} (Categories fetch failed)` : 'An error occurred fetching categories'
+            })
         }
     };
 
@@ -69,49 +96,70 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
     };
 
     const addExpense = async (amount: number, description: string, categoryname: string, userId: string, date: string): Promise<void> => { // Ensure return type is Promise<void>
-        setIsLoading(true)
+        setIsExpenseLoading(true)
         try {
             const response = await apiAddExpense(amount, description, categoryname, userId, date)
+            
             if(response.status === 201) {
                 const expense = response?.data?.expense
-                setExpenseData((prev) => [...prev, expense])
+                if(expense) {
+                    setExpenseData((prev) => [...prev, expense as unknown as Expense])
+                }
+                toast({
+                    variant: 'default',
+                    description: response ? response?.data?.message : 'Successfully Added Expense',
+                    title: "Success"
+                })
             }
 
-            startTransition(() => {
+            setIsExpenseTransition(() => {
                 fetchExpenseData()
             })
+
         } catch (error) {
-            console.log(error)
-            setError((error as Error).message || 'An error occurred while adding the expense.');
+            toast({
+                title: 'Error',
+                description: `${(error as { response?: { data?: { message?: string } } })?.response?.data?.message}`,
+                variant: 'destructive'
+            })
         } finally {
-            setIsLoading(false)
+            setIsExpenseLoading(false)
         }
     };
 
     const addCategory = async (name: string, userId: string) => {
-        setIsLoading(true)
+        setIsCategoryLoading(true)
         try {
             const response = await apiAddCategory(name, userId); // Call the API with both parameters
 
             if(response.status === 201) {
-                const newCategory = response?.data?.newCategory;
-                setCategories((prev) => [...prev, newCategory])
+                const newCategory = response?.data?.category;
+                if (newCategory) {
+                    setCategories((prev) => [...prev, newCategory as unknown as Category]) // Cast to unknown first
+                }
+                toast({
+                    title: "Success",
+                    description: response ? response?.data?.message : 'Successfull Added Category',
+                    variant: 'default'
+                })
             }
 
-            startTransition(() => {
+            setIsCategoryTransition(() => {
                 fetchCategories()
             })
            
         } catch (error) {
-            console.log(error)
-            setError((error as Error).message || 'An error occurred while adding the category.');
+            toast({
+                title: 'Error',
+                description: `${(error as { response?: { data?: { message?: string } } })?.response?.data?.message}`,
+            })
         } finally {
-            setIsLoading(false)
+            setIsCategoryLoading(false)
         }
     };
 
     return (
-        <AppContext.Provider value={{ session, expenseData, categories, isLoading, error, userId, isPending, addCategory, addExpense, getTotalExpense }}>
+        <AppContext.Provider value={{ session, expenseData, categories, isExpenseLoading, isCategoryLoading, error, userId, isExpensePending, isCategoryPending, addCategory, addExpense, getTotalExpense }}>
             {children}
         </AppContext.Provider>
     );

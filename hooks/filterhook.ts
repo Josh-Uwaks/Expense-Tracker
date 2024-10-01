@@ -1,13 +1,18 @@
 "use client"
 
-import { Payment } from "@/app/types";
+import { Expense } from "@/app/types";
 import React, { useState } from "react";
 import { toast } from "./use-toast";
 
 
-export default function FilterByDateRangeHook(data: Payment[]) {
+export default function FilterByDateRangeHook(data: Expense[]) {
 
-    const [filteredData, setFilteredData] = useState<Payment[]>([])
+    const [filteredData, setFilteredData] = useState<Expense[]>([])
+
+    // Normalize the date to remove time part for accurate comparison
+    const normalizeDate = (date: Date) => {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    };
 
     const handleFilter = (startDate: Date, endDate:Date) => {
 
@@ -23,8 +28,10 @@ export default function FilterByDateRangeHook(data: Payment[]) {
             return
         }
 
+        const normalizedStartDate = normalizeDate(startDate)
+        const normalizedEndDate = normalizeDate(endDate)
           // Debugging step: Log the start and end date and each item's date
-          console.log("Filtering data between:", startDate, endDate);
+          console.log("Filtering data between:", normalizedStartDate, normalizedEndDate);
           data.forEach(item => {
               const itemDate = new Date(item.date);
               console.log(`Item ID: ${item.id}, Original Date: ${item.date}, Parsed Date: ${itemDate}`);
@@ -38,8 +45,12 @@ export default function FilterByDateRangeHook(data: Payment[]) {
                 console.warn(`Invalid date for item ID ${item.id}: ${item.date}`);
                 return false;
             }
+             // Normalize the item date for comparison
+             const normalizedItemDate = normalizeDate(itemDate);
+             // Filter dates that fall within the range
+            return normalizedItemDate >= normalizedStartDate && normalizedItemDate <= normalizedEndDate;
             
-            return itemDate >= startDate && itemDate <= endDate
+            // return itemDate >= startDate && itemDate <= endDate
         })
 
         setFilteredData(result)

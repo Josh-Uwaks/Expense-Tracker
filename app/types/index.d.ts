@@ -1,14 +1,14 @@
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 
-export type Payment = {
-  id: string
-  amount: number
-  category: string
-  description: string
-  date: string
-  // status: "pending" | "processing" | "success" | "failed"
-}
+// export type Payment = {
+//   id: string
+//   amount: number
+//   category: string
+//   description: string
+//   date: string
+//   // status: "pending" | "processing" | "success" | "failed"
+// }
 
 export type Category = {
   id: string;

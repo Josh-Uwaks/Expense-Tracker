@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest} from 'next/server'
 import prisma from '@/prisma'
-import { auth } from '@/app/helpers/auth';
 import { checkRateLimit } from '@/lib/rateLimiter/rateLimiter';
 
 
@@ -53,7 +52,6 @@ export async function POST(request: NextRequest) {
     if (!categoryExists) {
         return NextResponse.json({ message: "Invalid category." }, { status: 400 });
     }
-   
       // Create a new expense
       const newExpense = await prisma.expense.create({
         data: {

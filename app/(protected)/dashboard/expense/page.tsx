@@ -13,8 +13,7 @@ import { useCurrentUser } from '@/hooks/useSession'
 
 const page = () => {
 
-  const user = useCurrentUser()
-
+ 
   return (
     <div className='min-h-screen'>
       
@@ -35,7 +34,7 @@ const page = () => {
         </div>
 
         <div>
-          <DataTableDemo/>
+          {/* <DataTableDemo/> */}
         </div>
       </div>
       

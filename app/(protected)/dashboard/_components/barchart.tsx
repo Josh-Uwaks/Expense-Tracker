@@ -1,166 +1,113 @@
 "use client"
 
 import React, { useEffect } from 'react'
-import {BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, PieChart, Pie} from 'recharts'
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, PieChart, Pie } from 'recharts'
 import { ArrowLeftRight } from 'lucide-react';
+import { useAppContext } from '@/app/context/appcontext';
+import { format, startOfWeek, endOfWeek, isSameWeek, getMonth } from 'date-fns';
 
-const data = [
-    {
-      "name": "Page A",
-      "uv": 4000,
-      "pv": 2400
-    },
-    {
-      "name": "Page B",
-      "uv": 3000,
-      "pv": 1398
-    },
-    {
-      "name": "Page C",
-      "uv": 2000,
-      "pv": 9800
-    },
-    {
-      "name": "Page D",
-      "uv": 2780,
-      "pv": 3908
-    },
-    {
-      "name": "Page E",
-      "uv": 1890,
-      "pv": 4800
-    },
-    {
-      "name": "Page F",
-      "uv": 2390,
-      "pv": 3800
-    },
-    {
-      "name": "Page G",
-      "uv": 3490,
-      "pv": 4300
-    }
-  ]
-  
+export default function Chart() {
+  const [changeChart, setChangeChart] = React.useState(false);
+  const [dimension, setDimension] = React.useState({ width: 800, height: 300 });
+  const [classificationType, setClassificationType] = React.useState<'week' | 'month'>('month');
+  const { expenseData } = useAppContext();
 
-  const data01 = [
-    {
-      "name": "Group A",
-      "value": 400
-    },
-    {
-      "name": "Group B",
-      "value": 300
-    },
-    {
-      "name": "Group C",
-      "value": 300
-    },
-    {
-      "name": "Group D",
-      "value": 200
-    },
-    {
-      "name": "Group E",
-      "value": 278
-    },
-    {
-      "name": "Group F",
-      "value": 189
-    }
-  ];
-  const data02 = [
-    {
-      "name": "Group A",
-      "value": 2400
-    },
-    {
-      "name": "Group B",
-      "value": 4567
-    },
-    {
-      "name": "Group C",
-      "value": 1398
-    },
-    {
-      "name": "Group D",
-      "value": 9800
-    },
-    {
-      "name": "Group E",
-      "value": 3908
-    },
-    {
-      "name": "Group F",
-      "value": 4800
-    }
-  ];
+  const onChange = () => {
+    setChangeChart(prev => !prev);
+  };
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setDimension({ width: 340, height: 300 });
+      } else if (window.innerWidth <= 1024) {
+        setDimension({ width: 350, height: 250 });
+      } else if (window.innerWidth <= 1200) {
+        setDimension({ width: 450, height: 300 });
+      } else if (window.innerWidth <= 1450) {
+        setDimension({ width: 500, height: 300 });
+      } else {
+        setDimension({ width: 800, height: 300 });
+      }
+    };
 
-export default function Chart(){
+    window.addEventListener('resize', handleResize);
 
-    const [changeChart, setChangeChart] = React.useState(false)
-    const [dimension, setDimension] = React.useState({ width: 800, height: 300 });
+    handleResize();
 
-    const onChange = () => {
-        setChangeChart(prev => !prev)
-    }
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-    console.log({
-      changeChart,
-      dimension
-    })
-
-    useEffect(() => {
-      const handleResize = () => {
-        if (window.innerWidth <= 768) {
-          setDimension({ width: 340, height: 300 });
-        } else if (window.innerWidth <= 1024) {
-          setDimension({ width: 350, height: 250 });
-        } else if (window.innerWidth <= 1200) {
-          setDimension({ width: 450, height: 300 });
-        } else if (window.innerWidth <= 1450) {
-          setDimension({width: 500, height: 300})
-        } else {
-          setDimension({width: 800, height: 300})
-        }
+  // Function to classify by weeks (Monday to Friday)
+  const classifyByWeek = (data: typeof expenseData) => {
+    return data.reduce((acc, expense) => {
+      const date = new Date(expense.date);
+      const start = startOfWeek(date, { weekStartsOn: 1 }); // Monday
+      const end = endOfWeek(start, { weekStartsOn: 5 }); // Friday
+      const weekLabel = `${format(start, 'MMM d')} - ${format(end, 'MMM d')}`;
+      
+      const existingWeek = acc.find(item => item.name === weekLabel);
+      if (existingWeek) {
+        existingWeek.amount += expense.amount;
+      } else {
+        acc.push({ name: weekLabel, amount: expense.amount });
       }
 
-      window.addEventListener('resize', handleResize)
+      return acc;
+    }, [] as { name: string, amount: number }[]);
+  };
 
-      handleResize()
+  // Function to classify by months (January to December)
+  const classifyByMonth = (data: typeof expenseData) => {
+    return data.reduce((acc, expense) => {
+      const month = format(new Date(expense.date), 'MMMM'); // Full month name
+      const existingMonth = acc.find(item => item.name === month);
 
-      return () => window.removeEventListener('resize', handleResize)
-    }, [])
+      if (existingMonth) {
+        existingMonth.amount += expense.amount;
+      } else {
+        acc.push({ name: month, amount: expense.amount });
+      }
 
-    return(
-        <>
-        <div className='my-3'>
-            <button onClick={onChange} className='flex gap-2 text-[12px] items-center'> <ArrowLeftRight size={15}/>Pie Chart</button>
+      return acc;
+    }, [] as { name: string, amount: number }[]);
+  };
+
+  // Transform data based on classification type (week or month)
+  const chartData = classificationType === 'week' ? classifyByWeek(expenseData) : classifyByMonth(expenseData);
+
+  return (
+    <>
+      <div className='my-3'>
+        <button onClick={onChange} className='flex gap-2 text-[12px] items-center'>
+          <ArrowLeftRight size={15} /> Toggle Pie Chart
+        </button>
+
+        <div className='flex gap-4 mt-2'>
+          <button onClick={() => setClassificationType('week')} className='text-[12px]'>
+            Classify by Week (Mon - Fri)
+          </button>
+          <button onClick={() => setClassificationType('month')} className='text-[12px]'>
+            Classify by Month (Jan - Dec)
+          </button>
         </div>
+      </div>
 
-        {
-        changeChart ?   
-        
-        <PieChart width={dimension.width} height={dimension.height} >
-            <Pie data={data01} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#8884d8" />
-            <Pie data={data02} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#82ca9d" label />
+      {changeChart ? (
+        <PieChart width={dimension.width} height={dimension.height}>
+          <Pie data={chartData} dataKey="amount" nameKey="name" cx="50%" cy="50%" outerRadius={50} fill="#8884d8" />
+          <Pie data={chartData} dataKey="amount" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} fill="#82ca9d" label />
         </PieChart>
-
-        :
-
-        <BarChart width={dimension.width} height={dimension.height} data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="pv" fill="#8884d8" />
-            <Bar dataKey="uv" fill="#82ca9d" />
+      ) : (
+        <BarChart width={dimension.width} height={dimension.height} data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="amount" fill="#8884d8" />
         </BarChart>
-
-    }
-
-        </>
-    )
+      )}
+    </>
+  );
 }

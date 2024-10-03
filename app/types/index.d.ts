@@ -27,8 +27,8 @@ export type Expense = {
     id: string;
     userId: string;
     amount: number;
-    description: string;
-    category: string;
+    description?: string;
+    categoryId: string;
     date: string;
     createdAt: string;
     updatedAt: string;
@@ -37,7 +37,7 @@ export type Expense = {
   
 export type ExpenseResponse = {
     message: string,
-    expense: Expense[];
+    expenses: Expense[];
 };
 
 

@@ -1,68 +1,39 @@
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+"use client"
+import { useAppContext } from "@/app/context/appcontext"
+import { formatCurrency } from "@/lib/utils"
+import { PiBowlFoodLight } from "react-icons/pi";
+import { Bus } from 'lucide-react';
+import { CircleHelp } from 'lucide-react';
+import {format} from 'date-fns'
 
-
-
-const receipt = [
-    {
-      category: "food",
-      amount: "$250.00",
-      date: "2024 June 25",
-    },
-    {
-        category: "food",
-        amount: "$250.00",
-        date: "2024 June 25",
-      },
-      {
-        category: "food",
-        amount: "$250.00",
-        date: "2024 June 25",
-      },
-      {
-        category: "food",
-        amount: "$250.00",
-        date: "2024 June 25",
-      },
-
-  ]
 
 export default function RecentTransaction() {
+
+  const {expenseData} = useAppContext()
+
+  console.log({
+    "transaction history expense data": expenseData
+  })
+
     return(
         <>
-        {/* <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader> 
-                <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody className="">
-                {receipt.map((item) => (
-                <TableRow key={item.category} className="">
-                    <TableCell>{item.category}</TableCell>
-                    <TableCell>{item.amount}</TableCell>
-                    <TableCell>{item.date}</TableCell>
-                </TableRow>
-                ))}
-            </TableBody>
-        </Table> */}
-
         <div className="flex flex-col gap-5 py-6">
-          {receipt.map((item, index) => (
+          {expenseData.slice(0, 6).map((item, index) => (
             <div key={index} className="flex justify-between">
+
               <div className="flex items-center gap-3">
-                <div className="h-[50px] w-[50px] rounded-full bg-gray-700">
+                <div className="h-[50px] w-[50px] rounded-full bg-gray-700 flex items-center justify-center text-white">
+                  {item.categoryId === "food" ? <PiBowlFoodLight size={20}/> : item.categoryId === 'transport fare' ? <Bus size={20}/> : <CircleHelp size={20}/>}
                 </div>
+
                 <div>
-                  <h1 className="text-lg capitalize">{item.category}</h1>
-                  <span className="text-[12px] text-[#727272]">{item.date}</span>
+                  <h1 className="text-lg capitalize">{item.categoryId}</h1>
+                  <span className="text-[12px] text-[#727272]">{format(new Date(item.date), 'yyyy-MM-dd')}</span>
                 </div>
               </div>
 
-              <div>
-                  <h1 className="text-lg">{item.amount}</h1>
+              <div className="lg:w-[100px]">
+                  <h1 className="text-lg">{formatCurrency(item.amount)}</h1>
                   <h1 className="text-green-500 text-[12px]">Completed</h1>
                 </div>
             </div>

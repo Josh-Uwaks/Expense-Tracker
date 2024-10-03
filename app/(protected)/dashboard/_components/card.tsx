@@ -7,7 +7,7 @@ import CountUp from 'react-countup'
 type CardProp = {
     title: string,
     paragraph: string,
-    amount: number,
+    amount: number | string,
     icon: ReactNode
 }
 
@@ -18,7 +18,15 @@ export const Card = ( {title,paragraph, amount, icon}: CardProp ) => (
                 <h2>{title}</h2>
                 <p>{paragraph}</p>
             </div>
-            <p className="text-2xl font-bold mt-4"><CountUp end={amount} duration={5}/></p>
+            <p className="text-2xl font-bold mt-4">
+            {
+            typeof amount === "number" ? (
+                <CountUp end={amount} duration={5} />
+                ) : (
+                amount // Display formatted currency string if amount is a string
+                )
+            }
+            </p>
         </div>
 
         <div className='p-3 rounded-full bg-gray-800 text-white'>

@@ -17,7 +17,6 @@ import { ArrowUpDown, CalendarIcon, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Trash2 } from 'lucide-react'
-import { format } from "date-fns"
 import {
   Table,
   TableBody,
@@ -26,8 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Payment } from "@/app/types"
-import { data } from "@/app/helpers/index"
+
 import { Separator } from "@/components/ui/separator"
 import { 
   Dialog,
@@ -43,9 +41,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
+import { Expense } from "@/app/types"
+import {format} from 'date-fns'
 
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<Expense>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -69,7 +69,7 @@ const columns: ColumnDef<Payment>[] = [
       enableHiding: false,
     },
     {
-      accessorKey: "category",
+      accessorKey: "categoryId",
       header: ({column}) => {
           return (
               <Button
@@ -82,7 +82,7 @@ const columns: ColumnDef<Payment>[] = [
           )
       },
       cell: ({row}) => (
-        <div className="capitalize">{row.getValue("category")}</div>
+        <div className="capitalize">{row.getValue("categoryId")}</div>
       )
     },
     {
@@ -96,7 +96,7 @@ const columns: ColumnDef<Payment>[] = [
       accessorKey: "date",
       header: "Date",
       cell: ({row}) => (
-          <div>{row.getValue("date")}</div>
+          <div>{format(new Date(row.getValue("date")), 'dd MMMM yyyy')}</div>
       )
     },
     {
@@ -108,7 +108,7 @@ const columns: ColumnDef<Payment>[] = [
         // Format the amount as a dollar amount
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency: "NGN",
         }).format(amount)
   
         return <div className="text-right font-medium">{formatted}</div>
@@ -191,8 +191,10 @@ const columns: ColumnDef<Payment>[] = [
     },
   ]
   
-
-export function DataTableDemo() {
+interface DataTableProp {
+  data: Expense[]
+}
+export function DataTableDemo({data}: DataTableProp) {
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -200,8 +202,21 @@ export function DataTableDemo() {
   const [rowSelection, setRowSelection] = React.useState({})
   const [pageSize, setPageSize] = React.useState(5)
 
+  // Apply filtering logic to the data
+  const filteredData = React.useMemo(() => {
+    return data.filter((expense) => {
+      return columnFilters.every((filter) => {
+        const column = filter.id as keyof Expense // Ensure the filter id is a valid column key
+        const filterValue = (filter.value as string).toLowerCase() // Assert filter value as string
+        const cellValue = expense[column]?.toString().toLowerCase() // Convert cell value to lowercase string
+        return cellValue?.includes(filterValue) // Filter rows based on column value
+      })
+    })
+  }, [data, columnFilters])
+
+
   const table = useReactTable({
-    data,
+    data: filteredData, // Pass filtered data here
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -217,8 +232,9 @@ export function DataTableDemo() {
       columnVisibility,
       rowSelection,
     },
-    initialState: {pagination: {pageSize: pageSize}}
+    initialState: { pagination: { pageSize: pageSize } }
   })
+
 
   return (
     <div className="w-full">

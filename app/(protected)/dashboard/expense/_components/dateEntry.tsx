@@ -1,7 +1,6 @@
 "use client"
 
 import { DateSchema, ReportDateSchema } from '@/app/schemas/schema'
-import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {useForm} from 'react-hook-form'
 import {
@@ -21,45 +20,19 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from "@/components/ui/calendar"
 import { CalendarIcon } from "lucide-react"
-import FilterByDateRangeHook from '@/hooks/filterhook'
-import { useAppContext } from '@/app/context/appcontext'
-// import {data} from '@/app/helpers/index'
 
 
-export default function DateEntry({classname}: {classname?: string}) {
+type DateEntryProp = {
+    classname?: string,
+    onSubmit: (data: DateSchema) => void
+}
+
+
+export default function DateEntry({classname, onSubmit}: DateEntryProp) {
 
     const form = useForm<DateSchema>({
         resolver: zodResolver(ReportDateSchema),
       })
-
-      const {expenseData} = useAppContext()
-      console.log(expenseData)
-
-    //   const {filteredData, handleFilter} = FilterByDateRangeHook(data)
-    //   console.log(filteredData)
-    
-      function onSubmit(data: DateSchema) {
-
-        if (!data.first_date_entry || !data.second_date_entry) {
-            toast({
-                variant: 'destructive',
-                title: "Date must be provided",
-                description: "kindly provide the necessary informations"
-            })
-            return
-        } else {
-            // handleFilter(data.first_date_entry, data.second_date_entry)
-        }
-    
-        toast({
-        title: "You submitted the following values:",
-        description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            </pre>
-        ),
-        })
-    }
 
 
     return (

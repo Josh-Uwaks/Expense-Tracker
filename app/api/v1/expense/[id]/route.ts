@@ -34,12 +34,30 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const expenses = await prisma.expense.findMany({
       where: {
         userId: id,
+      },
+      include: {
+        category: {
+          select: {
+            name: true
+          }
+        }
       }
     });
 
+    // Transform the expense data to include category name instead of categoryId
+    const transformedExpenses = expenses.map(expense => ({
+      id: expense.id,
+      amount: expense.amount,
+      description: expense.description,
+      date: expense.date,
+      createdAt: expense.createdAt,
+      updatedAt: expense.updatedAt,
+      categoryId: expense.category.name,  // Use category name
+    }));
+
     // Return the fetched expenses with a success message
     return NextResponse.json(
-      { message: `User Expense Data Has Been Fetched Successfully`, expenses },
+      { message: `User Expense Data Has Been Fetched Successfully`, expenses:transformedExpenses },
       { status: 200 }
     );
   } catch (error) {

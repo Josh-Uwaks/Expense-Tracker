@@ -1,4 +1,4 @@
-
+"use client"
 import React from "react"
 import { HandCoins } from 'lucide-react';
 import { ReceiptText } from 'lucide-react';
@@ -8,11 +8,12 @@ import Chart from "./_components/barchart";
 import Link from "next/link";
 import RecentTransaction from "./_components/tabledata";
 import {Separator} from '@/components/ui/separator'
-
+import { useAppContext } from "@/app/context/appcontext";
+import { formatCurrency } from "@/lib/utils";
 
 function Dashboard(){
 
-    
+    const {getTotalExpense, expenseData} = useAppContext()
  
     return (
         <>
@@ -20,9 +21,10 @@ function Dashboard(){
                 <h1 className="text-2xl font-bold">Welcome!! Joshua Uwakwe 👋</h1>
                 <p className="text-gray-500">All informations regarding your expense are highlighted in the various section in the dashboard</p>
 
+           
                 <div className="lg:grid-cols-2 lg:grid 2xl:grid-cols-3 gap-4 flex flex-col mt-5">
-                    <Card title={'Expenses'} paragraph="45% more since this week" amount={1200000} icon={<HandCoins/>} />
-                    <Card title={'Total Entries'} paragraph="45% more since this week" amount={1200000} icon={<ReceiptText/>} />
+                    <Card title={'Expenses'} paragraph="45% more since this week" amount={formatCurrency(getTotalExpense())} icon={<HandCoins/>} />
+                    <Card title={'Total Entries'} paragraph="45% more since this week" amount={expenseData.length} icon={<ReceiptText/>} />
 
 
                     <div className="row-start-2 col-span-2 border rounded-[8px] p-4 bg-white">

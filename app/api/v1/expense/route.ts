@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ message: "Invalid category." }, { status: 400 });
     }
       // Create a new expense
-      const newExpense = await prisma.expense.create({
+      const expense = await prisma.expense.create({
         data: {
           amount,
           description,
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
         }
       });
   
-      return NextResponse.json({ message: "Expense created successfully", newExpense }, { status: 201 });
+      return NextResponse.json({ message: "Expense created successfully", expense }, { status: 201 });
 
     } catch (error) {
         console.error("Error processing request:", error);

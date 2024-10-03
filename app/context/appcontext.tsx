@@ -40,11 +40,19 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
 
     const userId = session?.user?.id;
 
+    console.log({
+        "expense data is": expenseData
+    })
+
+    console.log({
+        "category data is ": categories
+    })
+
     const fetchExpenseData = async () => {
         try {
             if (userId) {
                const response = await getUserExpense(userId);
-               setExpenseData(response.data.expense)
+               setExpenseData(response.data.expenses)
                if (response.status === 200) {
                 toast({
                     variant: 'default',
@@ -101,10 +109,13 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
             const response = await apiAddExpense(amount, description, categoryname, userId, date)
             
             if(response.status === 201) {
-                const expense = response?.data?.expense
-                if(expense) {
-                    setExpenseData((prev) => [...prev, expense as unknown as Expense])
-                }
+                const expense = response?.data?.expenses
+                console.log({
+                    "expense after successful 201": expense
+                })
+                if (Array.isArray(expense) && expense.length > 0) {
+                    setExpenseData((prev) => [...prev, ...expense]); // Spread the new expenses
+                }    
                 toast({
                     variant: 'default',
                     description: response ? response?.data?.message : 'Successfully Added Expense',
@@ -134,6 +145,9 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
 
             if(response.status === 201) {
                 const newCategory = response?.data?.category;
+                console.log({
+                    "category after successful 201": newCategory
+                })
                 if (newCategory) {
                     setCategories((prev) => [...prev, newCategory as unknown as Category]) // Cast to unknown first
                 }

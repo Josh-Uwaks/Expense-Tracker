@@ -55,7 +55,9 @@ export default function FilterByDateRangeHook(data: Expense[]) {
 
         setFilteredData(result)
 
-        console.log(result)
+        console.log({
+            "result and filtered data is": result
+        })
     }
 
 

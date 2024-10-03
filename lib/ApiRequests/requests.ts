@@ -1,4 +1,6 @@
-import { Category, CategoryResponse, Expense, ExpenseResponse } from "@/app/types";
+import { Category, CategoryResponse, Expense,
+  //  ExpensePostRequest,
+    ExpenseResponse } from "@/app/types";
 import axios, {AxiosResponse} from "axios";
 import prisma from "@/prisma";
 

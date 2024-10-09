@@ -10,15 +10,17 @@ import RecentTransaction from "./_components/tabledata";
 import {Separator} from '@/components/ui/separator'
 import { useAppContext } from "@/app/context/appcontext";
 import { formatCurrency } from "@/lib/utils";
+import SignedUserClient from "@/hooks/signedUserClient";
 
 function Dashboard(){
 
     const {getTotalExpense, expenseData} = useAppContext()
+    const user = SignedUserClient()
  
     return (
         <>
             <div className="py-6 px-6 md:px-14 bg-[#FAFAFA] min-h-screen">
-                <h1 className="text-2xl font-bold">Welcome!! Joshua Uwakwe 👋</h1>
+                <h1 className="text-2xl font-bold">Welcome!! <span className="">{user?.email}</span> 👋</h1>
                 <p className="text-gray-500">All informations regarding your expense are highlighted in the various section in the dashboard</p>
 
            

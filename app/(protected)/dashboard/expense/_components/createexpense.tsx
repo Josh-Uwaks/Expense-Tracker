@@ -98,7 +98,7 @@ const CreateExpense = () => {
                     <div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
-                            <Input type="text" id="amount" placeholder="enter amount" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
+                            <Input type="text" id="amount" placeholder="Enter Amount" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
                             <Label className="lg:w-[100px] text-left">Date*</Label>

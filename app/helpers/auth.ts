@@ -4,13 +4,9 @@ import prisma from "@/prisma"; // Your Prisma client instance
 import { getUserById } from "@/lib/ApiRequests/requests";
 import authConfig from "@/auth.config";
 import { UserRoles } from "@prisma/client";
-import { AdapterUser } from "next-auth/adapters"; // Import AdapterUser
 import { getTwoFactorConfirmation } from "@/lib/tokenRequests/TwoFactorToken";
-
-// Define a custom user type
-type CustomUser = AdapterUser & {
-  role: UserRoles; // Add role property
-};
+import { getAccountByUserId } from "@/lib/accountRequests/requests";
+import { ExtendedUser } from "@/next-auth";
 
 export const {handlers, auth, signIn, signOut} = NextAuth({
   pages: {
@@ -72,36 +68,85 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       
     },
 
-    async session({token, session}){
+    async session({ token, session }) {
+    // Cast session.user to ExtendedUser to include the additional properties
+    const extendedUser = session.user as unknown as ExtendedUser;
 
-      if(token.sub && session.user) {
-        (session.user as CustomUser).id = token.sub; // Cast to CustomUser
-      }
+    // Populate extendedUser properties from the token
+    if (token.sub) {
+        extendedUser.id = token.sub; // Set user ID from the token
+    }
 
-      if(session.user && token.role) {
-        (session.user as CustomUser).role = token.role as UserRoles; // Cast to CustomUser
-      }
+    if (token.role) {
+        extendedUser.role = token.role as UserRoles; // Set user role from the token
+    }
 
-      console.log({
-        sessionToken: token,
-        session
-      })
-      
-      return session;
+    if (token.email) {
+        extendedUser.email = token.email; // Set email from the token
+    }
 
-    },
+    if (typeof token.isOAuth === 'boolean') {
+        extendedUser.isOAuth = token.isOAuth; // Set isOAuth from the token
+    }
+
+    if(session.user) {
+      extendedUser.isTwofactorEnabled = token.isTwofactorEnabled as boolean
+      extendedUser.name = token.name || "Unknown"; 
+      extendedUser.image = token.picture || ""; 
+    }
+
+    if(session.user && token.mobilenumber){
+      extendedUser.mobilenumber = token.mobilenumber as string
+    }
+
+    extendedUser.emailVerified = token.emailVerified instanceof Date
+    ? token.emailVerified
+    : null;
+
+    // const adapterUser = session.user as unknown as AdapterUser
+    // extendedUser.emailVerified = adapterUser.emailVerified
+    // Update the session.user with the extended user
+
+
+
+     // Debug logging
+     console.log({
+      "session is": session,
+      "token": token,
+      "extended user is": extendedUser
+  });
+
+    session.user = extendedUser; 
+
+    return session; // Return the updated session
+},
     async jwt({token}){
 
       if(!token.sub) return token
 
       const existingUser = await getUserById(token.sub)
+      if (!existingUser) return token; // Ensure existingUser is defined before proceeding
+
+      const existingAccount = await getAccountByUserId(existingUser.id) // Now safe to access id
 
       if(!existingUser) return token
 
+
+      // we check this details from user schema and pass down to the token
       token.role = existingUser.role
+      token.email = existingUser.email
+      token.name = existingUser.name ?? "Unknown"
+      token.isTwofactorEnabled = existingUser.isTwofactorEnabled
+      token.emailVerified = existingUser.emailVerified ?? null
+      token.mobilenumber = existingUser.mobilenumber
 
-      console.log(token)
+      // we check from account schemas for external providers like google etc and we pass to token as boolean
+      token.isOAuth = !!existingAccount
 
+      console.log({
+        "token is": token
+      })
+      
       return token
     }
   },

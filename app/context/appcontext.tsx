@@ -40,14 +40,6 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
 
     const userId = session?.user?.id;
 
-    console.log({
-        "expense data is": expenseData
-    })
-
-    console.log({
-        "category data is ": categories
-    })
-
     const fetchExpenseData = async () => {
         try {
             if (userId) {

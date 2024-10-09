@@ -1,5 +1,17 @@
 
 import * as z from "zod"
+import { UserRoles } from "@prisma/client"
+
+export const SettingsSchema = z.object({
+    // username: z.optional(z.string()),
+    name: z.optional(z.string()),
+    email: z.optional(z.string().email()),
+    mobilenumber: z.optional(z.string()),
+    role: z.optional(z.enum([UserRoles.ADMIN, UserRoles.USER])),
+    password: z.optional(z.string()),
+    new_password: z.optional(z.string()),
+    isTwofactorEnabled: z.optional(z.boolean()),
+})
 
 export const FormSchema = z.object({
     email: z.string().email(),
@@ -55,7 +67,7 @@ export type RegistrationInput = z.infer<typeof FormSchema>
 export type LoginInput = z.infer<typeof LoginSchema>
 export type ResetInput = z.infer<typeof ResetEmailSchema>
 export type ResetPasswordInputs = z.infer<typeof ResetPasswordSchema>
-
+export type SettingsInput = z.infer<typeof SettingsSchema>
 // const isEmailValid = (email: string) => {
 //     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 //     return emailRegex.test(email)

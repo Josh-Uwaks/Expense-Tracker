@@ -9,19 +9,18 @@ import {useForm, SubmitHandler} from 'react-hook-form'
 import { LoginSchema, LoginInput } from "@/app/schemas/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginAction } from "@/app/actions/login";
-import { Suspense, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { defaultLoginRedirect } from "@/route";
 import { Card } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 
 
 export default function Login(){
     
     const {toast} = useToast()
-    const searchParams = useSearchParams()
-    const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
+    // const searchParams = useSearchParams()
+    // const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
 
     const [show2FA, setShow2FA] = useState(false)
     const [isPending, startTransition] = useTransition()
@@ -44,15 +43,11 @@ export default function Login(){
                     });
                 }
 
-                if(data.success) {
-                    reset()
-                    // toast({
-                    //     variant: 'default',
-                    //     title: "Successful SignIn",
-                    //     description: data.success
-                    // })
-                    // window.location.href = defaultLoginRedirect; 
-                }
+            // Handle successful login without 2FA
+            if (data.success && !data.twoFactor) {
+                reset();
+                window.location.href = defaultLoginRedirect; 
+            }
 
                 if(data.twoFactor) {
                     toast({
@@ -76,7 +71,7 @@ export default function Login(){
     }
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <>
             <div className="grid lg:grid-cols-12 min-h-screen text-[14px]">
 
                 <div className="relative flex items-end bg-gray-900 lg:col-span-6 lg:h-full">
@@ -96,14 +91,14 @@ export default function Login(){
 
                               {show2FA && (
                                 <>
-                                    <form>
+                                 
                                         <div>
                                             <Label htmlFor="code">Code</Label>
                                             <Input {...register('code')} type="text" id="code" className="mt-1" placeholder="2FA Code"/>
                                         </div>
                                         {errors.code && <div>{errors.code.message}</div>}
 
-                                    </form>
+                                 
                                 </>
                                 )}
 
@@ -126,7 +121,7 @@ export default function Login(){
                                     </div>
 
                                     {errors.password && <div className="text-red-500">{errors.password.message}</div>}
-                                    {urlError}
+                                    {/* {urlError} */}
                                     </>
                                 )} 
 
@@ -150,6 +145,6 @@ export default function Login(){
                     </Card>
                 </div>
             </div>
-        </Suspense>
+        </>
     )
 }

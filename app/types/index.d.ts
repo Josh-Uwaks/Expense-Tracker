@@ -28,7 +28,7 @@ export type Expense = {
     userId: string;
     amount: number;
     description?: string;
-    categoryId: string;
+    category: string;
     date: string;
     createdAt: string;
     updatedAt: string;
@@ -39,6 +39,15 @@ export type ExpenseResponse = {
     message: string,
     expenses: Expense[];
 };
+
+interface ExpenseUpdateInput {
+  amount?: number;
+  description?: string;
+  userId?: string;
+  categoryId?: string;
+  date?: string;  // Optional date field for updating
+}
+
 
 
 export type User = {

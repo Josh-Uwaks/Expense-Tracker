@@ -38,6 +38,7 @@ export default function Registration(){
                     title: "Success",
                     description: response.message
                 })
+
             } else if (response?.error) {
                 toast({
                     variant: "destructive",

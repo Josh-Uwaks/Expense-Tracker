@@ -1,7 +1,7 @@
 import redis from "../redis/redis";
 
 const RATE_LIMIT_TIME_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 5; // Max 5 requests per time window
+const MAX_REQUESTS_PER_WINDOW = 10; // Max 5 requests per time window
 
 
 export async function checkRateLimit(ip: string) {

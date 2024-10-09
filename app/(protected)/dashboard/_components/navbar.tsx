@@ -30,7 +30,7 @@ export default async function Navbar(){
             <DropdownMenuTrigger>
                 <Avatar>
                     <AvatarImage src={user?.image || ""} alt='' />
-                    <AvatarFallback className='uppercase'>{user?.email.charAt(0)}</AvatarFallback>
+                    {/* <AvatarFallback className='uppercase'>{user?.email.charAt(0)}</AvatarFallback> */}
                 </Avatar>
             </DropdownMenuTrigger>
 

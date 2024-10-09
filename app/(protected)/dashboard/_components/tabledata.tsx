@@ -23,11 +23,11 @@ export default function RecentTransaction() {
 
               <div className="flex items-center gap-3">
                 <div className="h-[50px] w-[50px] rounded-full bg-gray-700 flex items-center justify-center text-white">
-                  {item.categoryId === "food" ? <PiBowlFoodLight size={20}/> : item.categoryId === 'transport fare' ? <Bus size={20}/> : <CircleHelp size={20}/>}
+                  {item.category === "food" ? <PiBowlFoodLight size={20}/> : item.category === 'transport fare' ? <Bus size={20}/> : <CircleHelp size={20}/>}
                 </div>
 
                 <div>
-                  <h1 className="text-lg capitalize">{item.categoryId}</h1>
+                  <h1 className="text-lg capitalize">{item.category}</h1>
                   <span className="text-[12px] text-[#727272]">{format(new Date(item.date), 'yyyy-MM-dd')}</span>
                 </div>
               </div>

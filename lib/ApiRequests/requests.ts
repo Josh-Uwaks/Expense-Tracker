@@ -1,6 +1,4 @@
-import { Category, CategoryResponse, Expense,
-  //  ExpensePostRequest,
-    ExpenseResponse } from "@/app/types";
+import { Category, CategoryResponse, Expense, ExpenseUpdateInput, ExpenseResponse } from "@/app/types";
 import axios, {AxiosResponse} from "axios";
 import prisma from "@/prisma";
 
@@ -11,6 +9,16 @@ export async function getUserExpense(userId: string): Promise<AxiosResponse<Expe
     return response;
   } catch (error) {
     console.error('Error fetching user expenses:', error);
+    throw error;
+  }
+}
+
+export async function getSingleExpense(singleId: string): Promise<AxiosResponse<ExpenseResponse>> {
+  try {
+    const response = await axios.get<ExpenseResponse>(`/api/v1/expense/user_${singleId}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching single expense ID:', error);
     throw error;
   }
 }
@@ -55,26 +63,33 @@ export async function addExpense(amount: number, description: string, categoryna
 
 
 //API REQUEST TO UPDATE LOGGED IN USER DATA
-export const updateExpense = async (id: string, updatedData: Partial<Expense>) => {
-    try {
-      const response = await fetch(`/api/expenses/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedData),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update expense');
-      }
-  
-      const result = await response.json();
-      return result
-    } catch (error) {
-      return error
+export async function updateExpense(expenseId: string, { amount, description, userId, categoryId, date }: ExpenseUpdateInput) { // Destructure updateData
+  try {
+    const response = await axios.patch(`/api/v1/expense/${expenseId}`, { amount, description, userId, categoryId, date }); // Use destructured properties
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error updating expense:', error.response?.data);
+    } else {
+      console.error('An unexpected error occurred:', error);
     }
-  };
+  }
+}
+
+
+export async function deleteExpense(expenseId: string): Promise<void> {
+  try {
+    const response = await axios.delete(`/api/v1/expense/${expenseId}`);
+    console.log('Expense deleted successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error deleting expense:', error.response?.data);
+    } else {
+      console.error('An unexpected error occurred:', error);
+    }
+  }
+}
 
 
   export const getUserByEmail = async (email: string) => {
@@ -107,3 +122,4 @@ export const updateExpense = async (id: string, updatedData: Partial<Expense>) =
       return null
     }
   }
+

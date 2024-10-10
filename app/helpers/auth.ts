@@ -95,6 +95,14 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       extendedUser.image = token.picture || ""; 
     }
 
+    if(session.user && token.lastname){
+      extendedUser.lastname = token.lastname as string
+    }
+
+    if(session.user && token.username) {
+      extendedUser.username = token.username as string
+    }
+
     if(session.user && token.mobilenumber){
       extendedUser.mobilenumber = token.mobilenumber as string
     }
@@ -102,12 +110,6 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
     extendedUser.emailVerified = token.emailVerified instanceof Date
     ? token.emailVerified
     : null;
-
-    // const adapterUser = session.user as unknown as AdapterUser
-    // extendedUser.emailVerified = adapterUser.emailVerified
-    // Update the session.user with the extended user
-
-
 
      // Debug logging
      console.log({
@@ -139,6 +141,8 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       token.isTwofactorEnabled = existingUser.isTwofactorEnabled
       token.emailVerified = existingUser.emailVerified ?? null
       token.mobilenumber = existingUser.mobilenumber
+      token.username = existingUser.username
+      token.lastname = existingUser.lastname
 
       // we check from account schemas for external providers like google etc and we pass to token as boolean
       token.isOAuth = !!existingAccount

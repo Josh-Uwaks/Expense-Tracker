@@ -2,6 +2,7 @@ import {Resend} from 'resend'
 
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const domain = process.env.NEXTAPP_PUBLIC_URL
 
 export const sendTwoFactorMail = async(
     email: string,
@@ -19,7 +20,8 @@ export const sendPasswordResetMail = async (
     email: string,
     token: string
 ) => {
-    const confirmLink = `http://localhost:3000/auth/new-passwordReset?token=${token}`
+
+    const confirmLink = `${domain}/auth/new-password?token=${token}`
 
 
     try {
@@ -39,8 +41,7 @@ export const sendVerificationMail = async (
     email: string,
     token: string
 ) => {
-    const confirmLink = `http://localhost:3000/auth/new-verification?token=${token}`
-
+    const confirmLink = `${domain}/auth/new-verification?token=${token}`
 
     try {
         await resend.emails.send({

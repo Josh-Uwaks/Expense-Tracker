@@ -15,7 +15,7 @@ import SignedUserClient from "@/hooks/signedUserClient";
 function Dashboard(){
 
     const {getTotalExpense, expenseData} = useAppContext()
-    const user = SignedUserClient()
+    const {user} = SignedUserClient()
  
     return (
         <>

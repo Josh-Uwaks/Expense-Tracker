@@ -9,7 +9,7 @@ import Link from 'next/link'
 import {Separator} from '@/components/ui/separator'
 import SignedUserClient from '@/hooks/signedUserClient'
 import { useTransition } from 'react'
-import {useForm, SubmitHandler} from 'react-hook-form'
+import { useForm, FormProvider, SubmitHandler } from 'react-hook-form'
 import { SettingsInput, SettingsSchema } from '@/app/schemas/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -21,103 +21,112 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Switch } from '@/components/ui/switch'
-import {useState} from 'react'
+import { FormControl, FormDescription, FormField, FormItem } from '@/components/ui/form'
+import { SettingsAction } from '@/app/actions/settings'
+import { toast } from '@/hooks/use-toast'
+import { Avatar } from '@radix-ui/react-avatar'
+import { AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
-const page = () => {
-
+const Page = () => {
 
   const [isPending, startTransition] = useTransition()
-  const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false)
-  const user = SignedUserClient()
+  const {user, update} = SignedUserClient()
 
-  const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<SettingsInput>({
-    resolver: zodResolver(SettingsSchema)
-    // defaultValues: {
-    //   name: user?.name || undefined,
-    //   email: user?.email || undefined,
-    //   mobilenumber: user?.mobilenumber || undefined,
-    //   role: user?.role || undefined,
-    //   password: undefined,
-    //   new_password: undefined,
-    //   isTwofactorEnabled: user?.isTwofactorEnabled // problem at the moment
-    // }
-  })
+  const methods = useForm<SettingsInput>({
+    resolver: zodResolver(SettingsSchema),
+    defaultValues: {
+      username: user?.username || undefined,
+      name: user?.name || undefined,
+      lastname: user?.lastname || undefined,
+      email: user?.email || undefined,
+      mobilenumber: user?.mobilenumber || undefined,
+      role: user?.role || undefined,
+      password: undefined,
+      new_password: undefined,
+      isTwofactorEnabled: user?.isTwofactorEnabled // problem at the moment
+    }
+  });
 
-  console.log({
-    "errors are as follows": errors
-  })
+  const { register, control, handleSubmit, formState: { errors, isSubmitting } } = methods;
+
+  if(errors) {
+    console.log({
+      "errors are as follows": errors
+    })
+  }
+
   const onSubmit: SubmitHandler<SettingsInput> = async (data) => {
     console.log({
       "onSubmit data": {
         data
       }
     });
+
+
+    startTransition(() => {
+      SettingsAction({
+        // username: data.username,
+        // name: data.name,
+        lastname: data.lastname,
+        // email: data.email,
+        // mobilenumber: data.mobilenumber,
+        // role: data.role,
+        // password: data.password,
+        // new_password: data.new_password,
+        // isTwofactorEnabled: data.isTwofactorEnabled
+      })
+      .then((data) => {
+        if (data.error) {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: data.error || "An unexpected error occurred", // Ensure error is a string here
+          });
+        }
   
-    // startTransition(() => {
-    //   SettingsAction({
-    //     name: data.name,
-    //     email: data.email,
-    //     mobilenumber: data.mobilenumber,
-    //     role: data.role,
-    //     password: data.password,
-    //     new_password: data.new_password,
-    //     isTwofactorEnabled: data.isTwofactorEnabled
-    //   })
-    //   .then((data) => {
-    //     if (data.error) {
-    //       toast({
-    //         variant: "destructive",
-    //         title: "Error",
-    //         description: data.error || "An unexpected error occurred", // Ensure error is a string here
-    //       });
-    //     }
-  
-    //     if (data.success) {
-    //       // session.update()
-    //       // .catch((err) => {
-    //       //   console.error("Session update error:", err); // Log session error
-    //       //   toast({
-    //       //     variant: 'destructive',
-    //       //     title: 'Error',
-    //       //     description: err.message || "Failed to update session"
-    //       //   });
-    //       // });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("SettingsAction Error:", error); // Log full error object for debugging
-    //     toast({
-    //       variant: 'destructive',
-    //       title: 'Error',
-    //       description: error.message || "An unexpected error occurred" // Display a string message
-    //     });
-    //   });
-    // });
+        if (data.success) {
+          toast({
+            variant: 'default',
+            title: 'Successfully updated settings',
+            description: `${data.message}`
+          })
+          update()
+          .catch((err) => {
+            console.error("Session update error:", err); // Log session error
+            toast({
+              variant: 'destructive',
+              title: 'Error',
+              description: err.message || "Failed to update session"
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("SettingsAction Error:", error); // Log full error object for debugging
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || "An unexpected error occurred" // Display a string message
+        });
+      });
+    });
   };
-  
-    // Handler to set the value of 2FA when the switch is toggled
-    const handleTwoFactorToggle = (checked: boolean) => {
-      setIsTwoFactorEnabled(checked)
-    }
 
   return (
-    <>
+    <FormProvider {...methods}>
       <form className='py-6 px-6 md:px-14 min-h-screen bg-[#FAFAFA]' onSubmit={handleSubmit(onSubmit)}>
 
         <div className='mb-5'>
           <h1 className='text-2xl font-bold'>Owner Account</h1>
-          <p className='text-gray-500'>Update your informations here</p>
+          <p className='text-gray-500'>Update your information here</p>
         </div>
 
         <div className='2xl:grid grid-cols-3 gap-10'>
-
           <div className='col-start-1 col-end-3 border rounded-md p-6 bg-white'>
-            <h1 className='text-lg font-bold'>Personal Informations</h1>
-            
+            <h1 className='text-lg font-bold'>Personal Information</h1>
             <Separator className='mt-4'/>
 
             <div className='mt-6'>
-
               <div className='flex gap-5'>
                 <div className='w-full'>
                   <Label htmlFor='firstname'>First Name</Label>
@@ -126,32 +135,27 @@ const page = () => {
 
                 <div className='w-full'>
                   <Label htmlFor='lastname'>Last Name</Label>
-                  <Input type='text' id='lastname' className='mt-1'/>
+                  <Input type='text' id='lastname' {...register('lastname')} className='mt-1'/>
                 </div>
-
               </div>
-
-              {user?.isOAuth == false && (
-                <>
+           
                   <div className='mt-5'>
                     <Label htmlFor='email'>Email</Label>
-                    <Input type='email' id='email' placeholder='' {...register('email')} className='mt-1'/>
+                    <Input type='email' id='email' {...register('email')} className='mt-1' disabled={user?.isOAuth}/>
                   </div>
-                </>
-              )}
+          
+              
 
               <div className='flex gap-5 mt-5'>
-
                 <div className='w-full'>
                   <Label htmlFor='username'>Username</Label>
-                  <Input type='text' id='username' placeholder='' className='mt-1'/>
+                  <Input type='text' id='username' {...register('username')} className='mt-1'/>
                 </div>
 
                 <div className='w-full'>
                   <Label>Phone Number</Label>
-                  <Input type='text' id='' placeholder='' {...register('mobilenumber')} className='mt-1'/>
+                  <Input type='text' {...register('mobilenumber')} className='mt-1'/>
                 </div>
-
               </div>
 
               {user?.isOAuth == false && (
@@ -159,86 +163,92 @@ const page = () => {
                 <div className='flex gap-5 mt-5'>
                   <div className='w-full'>
                     <Label htmlFor='password'>Old Password</Label>
-                    <Input type='password' id='password' placeholder='' {...register('password')} className='mt-1'/>
+                    <Input type='password' id='password' {...register('password')} className='mt-1'/>
                   </div>
                   <div className='w-full'>
                     <Label htmlFor='newpassword'>New Password</Label>
-                    <Input type='password' id='newpassword' placeholder='' {...register('new_password')} className='mt-1'/>
+                    <Input type='password' id='newpassword' {...register('new_password')} className='mt-1'/>
                   </div>
-              </div>
+                </div>
                 </>
               )}
               
-
               <div className='mt-5'>
                 <Label htmlFor='role'>Role</Label>
-                <Select 
-                    {...register('role')} 
-                    onValueChange={(value) => {
-                      // You can use the value directly here, no need to manually call onChange
-                      console.log(value);
-                      // Trigger the change in react-hook-form
-                      register('role').onChange(
-                        {target: {value}
-                      });
-                    }}
-                  >
-                    <SelectTrigger className='mt-1'>
-                      <SelectValue placeholder='Select role' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value='ADMIN'>ADMIN</SelectItem>
-                        <SelectItem value='USER'>USER</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                <FormField
+                  control={control}
+                  name="role"
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className='mt-1'>
+                        <SelectValue placeholder='Select role' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value='ADMIN'>ADMIN</SelectItem>
+                          <SelectItem value='USER'>USER</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
 
-              <div className='flex justify-between p-4 items-center mt-7 rounded-md border'>
-                <div>
-                  <h1>Two Factor Authentication</h1>
-                  <p>Toggle to control two factor authentication for your account</p>
-                </div>
-                {/* <Switch
-                {...register('isTwofactorEnabled')}
-                  checked={user?.isTwofactorEnabled}
-                  onCheckedChange={handleTwoFactorToggle}
-                /> */}
-              </div>
-              
+              {user?.isOAuth == false && (
+                <FormField
+                  control={control}
+                  name="isTwofactorEnabled"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mt-7">
+                      <div className="space-y-0.5">
+                        <h1 className="text-lg font-semibold">Two Factor Authentication</h1>
+                        <FormDescription>
+                          Toggle to control two-factor authentication for your account.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )
+            }
+              {/* </div> */}
               
             </div>
           </div>
 
           <div className='border rounded-md p-6 w-full bg-white mt-6 2xl:mt-0'>
-
             <h1 className='font-bold text-lg'>Your Photo</h1>
-
             <Separator className='mt-4'/>
 
             <div className='flex gap-3 mt-5'>
-              <div className=' h-[50px] w-[50px] text-center rounded-full border'>
-               P
-              </div>
-
-              <div className=''>
-                <h1 className='font-bold text-lg'>{user?.name ? user.name : 'No Name'}</h1>
+                    <Avatar className='h-[50] w-[50px]'>
+                        <AvatarImage src={user?.image || ""} alt='' className='rounded-full'/>
+                        <AvatarFallback className='uppercase'>{user?.email.charAt(0)}</AvatarFallback>
+                    </Avatar>
+              <div>
+                <h1 className='font-bold text-lg'>{user?.name || 'No Name'}</h1>
                 <div className='flex gap-1'>
-                  <button>Delete</button>
-                  <button>Update</button>
+                  <button type='button'>Delete</button>
+                  <button type='button'>Update</button>
                 </div>
               </div>
-
-
             </div>
 
-            <div className=' border-dashed border-[1px] border-[#e2e2e2] mt-6 rounded-md p-8 flex flex-col items-center'>
+            <div className='border-dashed border-[1px] border-[#e2e2e2] mt-6 rounded-md p-8 flex flex-col items-center'>
               <div className='h-[60px] rounded-full w-[60px] bg-[#e8e8e8] flex justify-center items-center'>
                 <CloudUpload className='text-[#727272]'/>
               </div>
 
-              <h1 className='mt-4 mb-2 text-gray-500'><span>click to upload</span> or drag and drop</h1>
+              <h1 className='mt-4 mb-2 text-gray-500'><span>Click to upload</span> or drag and drop</h1>
 
               <div className='text-gray-500'>
                 <p>SVG, PNG, JPG, or GIF</p>
@@ -257,21 +267,17 @@ const page = () => {
                 <Link href={''}>Learn more</Link>
               </div>
             </div>
-
           </div>
 
         </div>
 
         <div className='flex gap-3 justify-end w-full mt-5'>
-      
-            <Button variant={'ghost'} size={'lg'}>Cancel</Button>
-            <Button size={'lg'} disabled={isPending}>{isPending ? 'Saving...' : 'Save'}</Button>
-       
+          <Button size={'lg'} disabled={isPending}>{isPending ? 'Updating...' : 'Update Profile'}</Button>
         </div>
 
       </form>
-    </>
+    </FormProvider>
   )
 }
 
-export default page
+export default Page

@@ -2,9 +2,9 @@ import { ExtendedUser } from "@/next-auth";
 import { useSession } from "next-auth/react";
 
 export default function SignedUserClient() {
-    const session = useSession()
+    const { data: session, update } = useSession();
 
-    return session?.data?.user as ExtendedUser | undefined
+    const user = session?.user as ExtendedUser | undefined;
 
- // Explicitly cast to ExtendedUser
+    return { user, update };
 }

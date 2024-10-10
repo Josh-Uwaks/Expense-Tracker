@@ -41,11 +41,17 @@ export default auth((req) => {
     const absoluteURL = new URL(apiAuthPrefix, nextUrl.origin);
     return NextResponse.redirect(absoluteURL.toString());
   }
-
   
   // Corrected condition to check if pathname is not in publicRoutes
   if(!isLoggedIn && !publicRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL("/auth/login", nextUrl.origin).toString())
+    let callbackURL = nextUrl.pathname
+    if(nextUrl.search) {
+      callbackURL += nextUrl.search
+    }
+    const encodedCallbackURL = encodeURIComponent(callbackURL)
+    return NextResponse.redirect(new URL(
+      `/auth/login?${encodedCallbackURL}`
+      , nextUrl.origin).toString())
   }
 
   return NextResponse.next()

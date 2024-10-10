@@ -3,8 +3,9 @@ import * as z from "zod"
 import { UserRoles } from "@prisma/client"
 
 export const SettingsSchema = z.object({
-    // username: z.optional(z.string()),
+    username: z.optional(z.string()),
     name: z.optional(z.string()),
+    lastname: z.optional(z.string()),
     email: z.optional(z.string().email()),
     mobilenumber: z.optional(z.string()),
     role: z.optional(z.enum([UserRoles.ADMIN, UserRoles.USER])),

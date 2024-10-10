@@ -14,14 +14,17 @@ import { useToast } from "@/hooks/use-toast";
 import { defaultLoginRedirect } from "@/route";
 import { Card } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 
 
 export default function Login(){
     
     const {toast} = useToast()
-    // const searchParams = useSearchParams()
-    // const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
+    const searchParams = useSearchParams()
+    const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
+    const callbackUrl = searchParams.get("callbackURL")
 
+    
     const [show2FA, setShow2FA] = useState(false)
     const [isPending, startTransition] = useTransition()
  
@@ -36,6 +39,7 @@ export default function Login(){
             LoginAction(data)
             .then((data) => {
                 if(data.error) {
+                    console.log(data.error)
                     toast({
                         variant: "destructive",
                         title: "Error",
@@ -46,7 +50,7 @@ export default function Login(){
             // Handle successful login without 2FA
             if (data.success && !data.twoFactor) {
                 reset();
-                window.location.href = defaultLoginRedirect; 
+                window.location.href = callbackUrl || defaultLoginRedirect; 
             }
 
                 if(data.twoFactor) {
@@ -55,6 +59,15 @@ export default function Login(){
                         title: "2FA Authentication"
                     })
                     setShow2FA(true)
+                }
+
+                if(data.message) {
+                    reset()
+                    toast({
+                        variant: 'default',
+                        title: `${data.message}`,
+                        description: data.message == 'Confirmation Email has been sent' ? 'Your Account has not been verified, kindly check your mail box and click on the verification link.' : data.message
+                    })
                 }
             })
 
@@ -121,7 +134,7 @@ export default function Login(){
                                     </div>
 
                                     {errors.password && <div className="text-red-500">{errors.password.message}</div>}
-                                    {/* {urlError} */}
+                                    {urlError}
                                     </>
                                 )} 
 
@@ -132,7 +145,9 @@ export default function Login(){
                         
 
 
-                        <div className="relative mt-12 pb-12 border-t border-input"> 
+                        {!show2FA && (
+                            <>
+                             <div className="relative mt-12 pb-12 border-t border-input"> 
                             <div className="bg-white absolute left-1/2 -mt-[26px] transform -translate-x-1/2 p-4 rounded-full">or</div>
                         </div>
 
@@ -140,6 +155,9 @@ export default function Login(){
                             <FcGoogle size={20}/>
                             <p>Continue with Google</p>
                         </div>
+                            </>
+                        )}
+                       
 
                         <div className="mt-4">No account ? <Link href={'/auth/register'} className="">Sign Up</Link></div>
                     </Card>

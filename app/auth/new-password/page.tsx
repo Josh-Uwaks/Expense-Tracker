@@ -12,8 +12,6 @@ import Link from "next/link"
 import { Suspense, useTransition } from "react"
 import {useForm, SubmitHandler} from 'react-hook-form'
 import { useSearchParams } from "next/navigation"
-import * as z from 'zod'
-
 
 
 function NewPassword() {
@@ -41,7 +39,7 @@ function NewPassword() {
             // Check if response has success property
             if(response?.success) {
                 reset()
-
+                window.location.href = '/auth/login'
                 toast({
                     variant: 'default',
                     title: "Success",

@@ -1,14 +1,19 @@
 "use server"
 import * as z from 'zod'
 import { LoginSchema } from '../schemas/schema'
+// import { signIn } from 'next-auth/react'
 import { signIn } from '../helpers/auth'
 import {AuthError} from 'next-auth'
 import { generateVerificationToken } from '@/lib/tokenRequests/verificationTokenRequests'
 import { getUserByEmail } from '@/lib/ApiRequests/requests'
 import { sendTwoFactorMail, sendVerificationMail } from '@/lib/mail/mail'
 import { generateTwoFactorToken, getTwoFactorConfirmation, getTwoFactorTokenByEmail } from '@/lib/tokenRequests/TwoFactorToken'
+import { defaultLoginRedirect } from '@/route'
 
-export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
+export const LoginAction = async (
+    values:z.infer<typeof LoginSchema>,
+    callbackUrl?: string
+ ) => {
     const validateFields = LoginSchema.safeParse(values)
 
     if(!validateFields.success) {
@@ -27,7 +32,7 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
     if (!existingUser.emailVerified) {
         const verification = await generateVerificationToken(existingUser.email)
         await sendVerificationMail(verification.email, verification.token)
-        return {success: "Confirmation Email has been sent"}
+        return {message: "Confirmation Email has been sent"}
     }
 
     if(existingUser.isTwofactorEnabled && existingUser.email) {
@@ -79,7 +84,7 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
     }
 
     try {
-        await signIn("credentials", {
+         await signIn("credentials", {
             email,
             password,
             redirect: false
@@ -88,6 +93,7 @@ export const LoginAction = async (values:z.infer<typeof LoginSchema> ) => {
         return {success: true}
         
     } catch (error: any) {
+        console.log(error)
         if(error instanceof AuthError) {
             switch(error.type) {
                 case "CredentialsSignin": 

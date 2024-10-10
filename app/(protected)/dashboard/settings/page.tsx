@@ -218,7 +218,6 @@ const Page = () => {
                 />
               </div>
 
-              {user?.isOAuth == false && (
                 <FormField
                   control={control}
                   name="isTwofactorEnabled"
@@ -232,6 +231,7 @@ const Page = () => {
                       </div>
                       <FormControl>
                         <Switch
+                        disabled={user?.isOAuth == true}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                         />
@@ -239,8 +239,7 @@ const Page = () => {
                     </FormItem>
                   )}
                 />
-              )
-            }
+             
               {/* </div> */}
               
             </div>

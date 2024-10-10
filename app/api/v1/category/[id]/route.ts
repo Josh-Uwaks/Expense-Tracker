@@ -17,15 +17,15 @@ type Params = {
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
 
-  const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
-  // Apply rate limiting
-  const isAllowed = await checkRateLimit(ip);
-  if (!isAllowed) {
-    return NextResponse.json(
-      { message: 'Rate limit exceeded. Please try again later.' },
-      { status: 429 }
-    );
-  }
+  // const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+  // // Apply rate limiting
+  // const isAllowed = await checkRateLimit(ip);
+  // if (!isAllowed) {
+  //   return NextResponse.json(
+  //     { message: 'Rate limit exceeded. Please try again later.' },
+  //     { status: 429 }
+  //   );
+  // }
 
   const { id } = params; // User ID to filter expenses
 

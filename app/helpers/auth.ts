@@ -116,11 +116,11 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
     : null;
 
      // Debug logging
-     console.log({
-      "session is": session,
-      "token": token,
-      "extended user is": extendedUser
-  });
+  //    console.log({
+  //     "session is": session,
+  //     "token": token,
+  //     "extended user is": extendedUser
+  // });
 
     session.user = extendedUser; 
 
@@ -152,9 +152,6 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       // we check from account schemas for external providers like google etc and we pass to token as boolean
       token.isOAuth = !!existingAccount
 
-      console.log({
-        "token is": token
-      })
       
       return token
     }

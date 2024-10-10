@@ -13,15 +13,15 @@ type ExpenseInput = {
 
 export async function POST(request: NextRequest) {
 
-  const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
-  // Apply rate limiting
-  const isAllowed = await checkRateLimit(ip);
-  if (!isAllowed) {
-    return NextResponse.json(
-      { message: 'Rate limit exceeded. Please try again later.' },
-      { status: 429 }
-    );
-  }
+  // const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+  // // Apply rate limiting
+  // const isAllowed = await checkRateLimit(ip);
+  // if (!isAllowed) {
+  //   return NextResponse.json(
+  //     { message: 'Rate limit exceeded. Please try again later.' },
+  //     { status: 429 }
+  //   );
+  // }
     try {
       const { amount, description, userId, categoryname, date }: ExpenseInput = await request.json();
 

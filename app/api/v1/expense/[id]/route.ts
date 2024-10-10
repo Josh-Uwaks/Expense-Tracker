@@ -20,16 +20,16 @@ type ExpenseInput = {
 // GET function to handle both user expenses and a single expense by ID
 export async function GET(req: NextRequest, { params }: { params: Params }) {
   const { id } = params; // This can be either userId or expenseId
-  const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
+  // const ip = req.headers.get('x-forwarded-for') || req.ip || 'unknown';
 
-  // Apply rate limiting
-  const isAllowed = await checkRateLimit(ip);
-  if (!isAllowed) {
-    return NextResponse.json(
-      { message: 'Rate limit exceeded. Please try again later.' },
-      { status: 429 }
-    );
-  }
+  // // Apply rate limiting
+  // const isAllowed = await checkRateLimit(ip);
+  // if (!isAllowed) {
+  //   return NextResponse.json(
+  //     { message: 'Rate limit exceeded. Please try again later.' },
+  //     { status: 429 }
+  //   );
+  // }
 
   try {
 

@@ -23,7 +23,7 @@ import { useAppContext } from "@/app/context/appcontext"
 
 const CreateExpense = () => {
 
-    const user = SignedUserClient()
+    const {user} = SignedUserClient()
     const {categories, addCategory, addExpense, isCategoryLoading, isExpenseLoading, isCategoryPending, isExpensePending} = useAppContext()
  
     const [category, setCategory] = useState<string>('')

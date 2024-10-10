@@ -36,14 +36,14 @@ const Page = () => {
     resolver: zodResolver(SettingsSchema),
     defaultValues: {
       username: user?.username || undefined,
-      name: user?.name || undefined,
+      firstname: user?.firstname || undefined,
       lastname: user?.lastname || undefined,
-      email: user?.email || undefined,
+      email: user?.email,
       mobilenumber: user?.mobilenumber || undefined,
       role: user?.role || undefined,
       password: undefined,
       new_password: undefined,
-      isTwofactorEnabled: user?.isTwofactorEnabled // problem at the moment
+      isTwofactorEnabled: user?.isTwofactorEnabled
     }
   });
 
@@ -62,18 +62,39 @@ const Page = () => {
       }
     });
 
+    // const initialValues = {
+    //   username: user?.username,
+    //   name: user?.name,
+    //   lastname: user?.lastname,
+    //   email: user?.email,
+    //   mobilenumber: user?.mobilenumber,
+    //   role: user?.role,
+    //   password: undefined,
+    //   new_password: undefined,
+    //   isTwofactorEnabled: user?.isTwofactorEnabled
+    // }
+
+
+    // Compare the form data with the initial values to create a payload with only changed fields
+    // const payload = Object.keys(data).reduce((changes, key) => {
+    //   if (data[key as keyof SettingsInput] !== initialValues[key as keyof SettingsInput]) {
+    //     changes[key as keyof SettingsInput] = data[key as keyof SettingsInput]
+    //   }
+    //   return changes
+    // }, {} as Partial<SettingsInput>)
+
 
     startTransition(() => {
       SettingsAction({
-        // username: data.username,
-        // name: data.name,
+        username: data.username,
+        firstname: data.firstname,
         lastname: data.lastname,
-        // email: data.email,
-        // mobilenumber: data.mobilenumber,
-        // role: data.role,
-        // password: data.password,
-        // new_password: data.new_password,
-        // isTwofactorEnabled: data.isTwofactorEnabled
+        email: data.email,
+        mobilenumber: data.mobilenumber,
+        role: data.role,
+        password: data.password,
+        new_password: data.new_password,
+        isTwofactorEnabled: data.isTwofactorEnabled
       })
       .then((data) => {
         if (data.error) {
@@ -130,7 +151,7 @@ const Page = () => {
               <div className='flex gap-5'>
                 <div className='w-full'>
                   <Label htmlFor='firstname'>First Name</Label>
-                  <Input type='text' id='firstname' {...register('name')} className='mt-1'/> 
+                  <Input type='text' id='firstname' {...register('firstname')} className='mt-1'/> 
                 </div>
 
                 <div className='w-full'>
@@ -154,7 +175,7 @@ const Page = () => {
 
                 <div className='w-full'>
                   <Label>Phone Number</Label>
-                  <Input type='text' {...register('mobilenumber')} className='mt-1'/>
+                  <Input type='text' {...register('mobilenumber')} className='mt-1' />
                 </div>
               </div>
 
@@ -163,11 +184,11 @@ const Page = () => {
                 <div className='flex gap-5 mt-5'>
                   <div className='w-full'>
                     <Label htmlFor='password'>Old Password</Label>
-                    <Input type='password' id='password' {...register('password')} className='mt-1'/>
+                    <Input type='password' id='password' {...register('password')} className='mt-1' autoComplete='off' />
                   </div>
                   <div className='w-full'>
                     <Label htmlFor='newpassword'>New Password</Label>
-                    <Input type='password' id='newpassword' {...register('new_password')} className='mt-1'/>
+                    <Input type='password' id='newpassword' {...register('new_password')} className='mt-1' autoComplete='off'/>
                   </div>
                 </div>
                 </>

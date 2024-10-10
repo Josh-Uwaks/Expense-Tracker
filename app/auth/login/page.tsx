@@ -22,7 +22,9 @@ export default function Login(){
     const {toast} = useToast()
     const searchParams = useSearchParams()
     const urlError = searchParams.get("error") === "OAuthAccountNotLinked" ? "Email already in use by a different provider" : ""
-    const callbackUrl = searchParams.get("callbackURL")
+    const callbackUrl = searchParams.get("callbackUrl")
+
+    console.log(callbackUrl)
 
     
     const [show2FA, setShow2FA] = useState(false)
@@ -50,7 +52,11 @@ export default function Login(){
             // Handle successful login without 2FA
             if (data.success && !data.twoFactor) {
                 reset();
-                window.location.href = callbackUrl || defaultLoginRedirect; 
+                if (callbackUrl) {
+                    window.location.href = callbackUrl; // Redirect to secured route
+                } else {
+                    window.location.href = defaultLoginRedirect; // Redirect to dashboard
+                }
             }
 
                 if(data.twoFactor) {

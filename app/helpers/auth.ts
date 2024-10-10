@@ -99,6 +99,10 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       extendedUser.lastname = token.lastname as string
     }
 
+    if(session.user && token.firstname){
+      extendedUser.firstname = token.firstname as string
+    }
+
     if(session.user && token.username) {
       extendedUser.username = token.username as string
     }
@@ -137,6 +141,7 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
       // we check this details from user schema and pass down to the token
       token.role = existingUser.role
       token.email = existingUser.email
+      token.firstname = existingUser.firstname
       token.name = existingUser.name ?? "Unknown"
       token.isTwofactorEnabled = existingUser.isTwofactorEnabled
       token.emailVerified = existingUser.emailVerified ?? null

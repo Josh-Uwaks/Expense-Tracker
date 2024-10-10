@@ -5,6 +5,7 @@ export type ExtendedUser = DefaultSession["user"] & {
     id: string;
     username: string;
     name: string;
+    firstname: string;
     lastname: string;
     email: string;
     mobilenumber: string;

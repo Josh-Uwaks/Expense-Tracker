@@ -15,8 +15,8 @@ import { Textarea } from "@/components/ui/textarea"
 import React, { ChangeEvent, useState } from "react"
 import { Plus } from 'lucide-react';
 import {Separator} from '@/components/ui/separator'
-import DatePicker from "./datepicker"
-import SelectCategory from "./selectCategory"
+import DatePicker from "@/app/(protected)/dashboard/expense/_components/datepicker"
+import SelectCategory from "@/app/(protected)/dashboard/expense/_components/selectCategory"
 import SignedUserClient from "@/hooks/signedUserClient"
 import { useAppContext } from "@/app/context/appcontext"
 import { toast } from "@/hooks/use-toast"

@@ -25,11 +25,10 @@ const Page = () => {
 
         tokenVerification(token)
             .then((data) => {
-
-                if(data.success) {
+                if (data.success) {
+                    setSuccess(data.success)
                     window.location.href = '/auth/login'
                 }
-                setSuccess(data.success)
                 setError(data.error)
                 toast({
                     variant: data.error ? "destructive" : "default",
@@ -63,31 +62,29 @@ const Page = () => {
             </div>
 
             <div className="lg:col-span-6 flex justify-center items-center">
-                <Card className="p-8 bg-white rounded-[16px] min-w-[430px] flex flex-col items-center gap-3 shadow-md border-none">
-                    <h1 className="text-2xl font-bold">Verify Email</h1>
-                    <p>to continue with our Expense Tracker</p>
+                <Card className="p-8 bg-white shadow-lg rounded-xl min-w-[430px] flex flex-col items-center gap-3">
+                    <h1 className="text-2xl font-semibold text-gray-800">Verify Email</h1>
+                    <p className="text-gray-600">to continue with our Expense Tracker</p>
 
                     {!success && !error && <PuffLoader />}
 
                     {success && (
-                        <div className="bg-[#33ec5b] text-white p-2 rounded-md">
+                        <div className="bg-green-500 text-white p-2 rounded-md w-full text-center">
                             {success}
                         </div>
                     )}
 
                     {!success && error && (
-                        <div className="bg-[#a12424] text-white p-2 rounded-md">
+                        <div className="bg-red-500 text-white p-2 rounded-md w-full text-center">
                             {error}
                         </div>
                     )}
 
-                    <Link href="/auth/login" className="">
-                        Back to Login
-                    </Link>
+                    <Link href="/auth/login" className="mt-4 text-blue-600 hover:underline">Back to Login</Link>
                 </Card>
             </div>
         </div>
     )
 }
 
-export default Page
+export default Page;

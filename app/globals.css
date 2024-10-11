@@ -6,6 +6,17 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* New Color Palette */
+  --color-primary-dark: #003366; /* Dark Blue */
+  --color-primary-light: #007BFF; /* Light Blue */
+  --color-neutral-white: #FFFFFF; /* White */
+  --color-neutral-light-gray: #F8F9FA; /* Light Gray */
+  --color-neutral-medium-gray: #CED4DA; /* Medium Gray */
+  --color-neutral-dark-gray: #343A40; /* Dark Gray */
+  --color-success-green: #28A745; /* Success Green */
+  --color-warning-yellow: #FFC107; /* Warning Yellow */
+  --color-error-red: #DC3545; /* Error Red */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +24,17 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+
+    /* New Dark Mode Colors */
+    --color-primary-dark: #1E1E2F; /* Dark Gray for Dark Mode */
+    --color-primary-light: #3F8CFF; /* Light Blue for Dark Mode */
+    --color-neutral-white: #1E1E2F; /* Dark Gray */
+    --color-neutral-light-gray: #121212; /* Dark Background */
+    --color-neutral-medium-gray: #333333; /* Darker Gray */
+    --color-neutral-dark-gray: #D1D1D1; /* Light Gray for Text */
+    --color-success-green: #4CAF50; /* Green for Dark Mode */
+    --color-warning-yellow: #FFC107; /* Same for Dark Mode */
+    --color-error-red: #F44336; /* Red for Dark Mode */
   }
 }
 

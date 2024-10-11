@@ -8,7 +8,7 @@ export default function Sidebar(){
     const pathname = usePathname(); // Get current route
 
     return(
-        <div className="bg-gray-900 text-gray-300"> 
+        <div className="text-gray-300"> 
             
             <div className='flex items-center px-6 my-8 text-white'>
                 <DollarSign size={40} className='mr-3'/>

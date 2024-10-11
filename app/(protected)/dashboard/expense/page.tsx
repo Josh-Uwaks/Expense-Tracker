@@ -56,7 +56,7 @@ const page = () => {
           <DateEntry classname="col-start-1 col-end-3" onSubmit={onSubmit} />
 
           <div className="flex items-center justify-end gap-3 flex-wrap col-start-3 col-end-4">
-            <CreateExpense />
+            {/* <CreateExpense /> */}
             <Download size={15} />
           </div>
 

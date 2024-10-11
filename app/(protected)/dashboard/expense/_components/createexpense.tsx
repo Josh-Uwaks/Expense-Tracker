@@ -1,4 +1,5 @@
 "use client"
+
 import {
     Dialog,
     DialogContent,
@@ -17,8 +18,8 @@ import {Separator} from '@/components/ui/separator'
 import DatePicker from "./datepicker"
 import SelectCategory from "./selectCategory"
 import SignedUserClient from "@/hooks/signedUserClient"
-import { toast } from "@/hooks/use-toast"
 import { useAppContext } from "@/app/context/appcontext"
+import { toast } from "@/hooks/use-toast"
 
 
 const CreateExpense = () => {
@@ -44,18 +45,34 @@ const CreateExpense = () => {
 
     }
 
+
     const AddExpense = async (event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault()
+
+        if (!expenseData.amount || !expenseData.category || !expenseData.description) {
+
+            toast({
+                variant: 'default',
+                title: "Please fill in all required fields"
+            });
+
+            return;
+        }
        
         if(user?.id && expenseData) {
             await addExpense(Number(expenseData.amount), expenseData.description, expenseData.category, user?.id, expenseData.date)
-            setExpenseData({
-                amount: '',
-                description: '',
-                category: '',
-                date: ''
-            })
+            clearForm()
         }
+    }
+
+    const clearForm = () => {
+        setExpenseData({
+            amount: '',
+            description: '',
+            category: '',
+            date: ''
+        })
+        setCategory("");
     }
 
     const handleFormData = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -86,11 +103,12 @@ const CreateExpense = () => {
             </DialogTrigger>
 
             <DialogContent className="min-w-[70%]">
-              <DialogHeader>
-                <DialogTitle>Create New Expense</DialogTitle>
-                <DialogDescription>
-                  This provide the necessary informations to create add to the expense data.
-
+                <DialogHeader>
+                    <DialogTitle>Create New Expense</DialogTitle>
+                    <DialogDescription>
+                         This provide the necessary informations to create add to the expense data.
+                    </DialogDescription>
+                </DialogHeader>
                   <Separator className="mt-4 mb-8"/>
 
                   <div className="mt-3 lg:grid grid-cols-2 gap-5">
@@ -98,11 +116,11 @@ const CreateExpense = () => {
                     <div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
-                            <Input type="text" id="amount" placeholder="Enter Amount" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
+                            <Input type="number" id="amount" placeholder="Enter Amount" className="mt-1 md:mt-0 lg:w-[500px]" name="amount" value={expenseData.amount} onChange={handleFormData}/>
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
                             <Label className="lg:w-[100px] text-left">Date*</Label>
-                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0"   selectedDate={expenseData.date ? new Date(expenseData.date) : undefined} 
+                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0" selectedDate={expenseData.date ? new Date(expenseData.date) : undefined} 
                     onDateChange={handleDateChange} />
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center">
@@ -134,15 +152,13 @@ const CreateExpense = () => {
                   <div className="mt-3">
                     <div className="flex gap-4 justify-end">
                         <Button className="mb-2" onClick={AddExpense} disabled={isExpenseLoading || isExpensePending}>{isExpenseLoading || isExpensePending ? 'Saving...' : 'Save'}</Button> 
-                        <Button className="" variant={'ghost'}>Clear</Button>
+                        <Button className="" variant={'ghost'} onClick={clearForm}>Clear</Button>
                     </div>
-
-                
                   </div>
 
 
-                </DialogDescription>
-              </DialogHeader>
+              
+           
             </DialogContent>
         </Dialog>
            

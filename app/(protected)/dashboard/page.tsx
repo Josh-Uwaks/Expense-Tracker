@@ -17,14 +17,14 @@ function Dashboard() {
     return (
         <>
             <div className="py-6 px-6 md:px-14 bg-gray-100 min-h-screen"> 
-                <h1 className="text-3xl font-bold text-gray-800">
+                <h1 className="md:text-3xl text-lg font-bold text-gray-800">
                     Welcome, <span className="text-blue-600">{user?.email}</span> 👋
                 </h1>
                 <p className="text-gray-600 mt-2">
                     All information regarding your expenses is highlighted in various sections on the dashboard.
                 </p>
 
-                <div className="lg:grid lg:grid-cols-2 2xl:grid-cols-3 gap-6 mt-6"> 
+                <div className="lg:grid lg:grid-cols-2 2xl:grid-cols-3 md:gap-6 gap-3 mt-6 flex flex-col"> 
                     {/* Card for Total Expenses */}
                     <Card 
                         title="Expenses" 

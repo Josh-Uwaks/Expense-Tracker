@@ -8,11 +8,11 @@ import Link from "next/link";
 
 export default function ToggleNav() {
     const [isDrawer, setIsDrawer] = React.useState(false);
-    const drawerRef = useRef<HTMLDivElement>(null); // ref for the drawer
+    const drawerRef = useRef<HTMLDivElement>(null); // Ref for the drawer
 
-    const drawerHandler = async (event: React.MouseEvent<HTMLDivElement>) => {
+    const drawerHandler = (event: React.MouseEvent<HTMLDivElement>) => {
         event.preventDefault();
-        setIsDrawer(!isDrawer);
+        setIsDrawer((prev) => !prev);
     };
 
     // Close the drawer when clicking outside
@@ -23,12 +23,10 @@ export default function ToggleNav() {
             }
         };
 
-        // Add event listener when the drawer is open
         if (isDrawer) {
             document.addEventListener("mousedown", handleClickOutside);
         }
 
-        // Cleanup event listener
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
@@ -36,25 +34,30 @@ export default function ToggleNav() {
 
     return (
         <>
-            <div className="md:hidden" onClick={drawerHandler}>
+            <div className="md:hidden cursor-pointer" onClick={drawerHandler} aria-label="Toggle Navigation">
                 <RxHamburgerMenu size={20} />
             </div>
 
             <div
-                ref={drawerRef} // ref to the drawer div
-                className={`${
-                    isDrawer ? "fixed transform translate-x-0" : "fixed -translate-x-[300px]"
-                } bg-[#676f7b] z-10 w-[300px] h-screen top-0 left-0 overflow-scroll transition-transform duration-200 md:hidden`}
+                ref={drawerRef} // Ref to the drawer div
+                className={`fixed top-0 left-0 w-[300px] h-screen bg-gray-800 z-10 overflow-scroll transition-transform duration-200 ${
+                    isDrawer ? "transform translate-x-0" : "transform -translate-x-[300px]"
+                }`}
+                aria-hidden={!isDrawer}
             >
-
-            <div className='flex items-center px-4 my-8 text-white'>
-                <DollarSign size={40} className='font-extrabold'/>
-                <h1 className=' tracking-widest font-bold text-2xl'>Trackify</h1>
-            </div>
+                <div className="flex items-center px-4 my-8 text-white">
+                    <DollarSign size={40} className="font-extrabold" />
+                    <h1 className="tracking-widest font-bold text-2xl">Trackify</h1>
+                </div>
 
                 <ul className="px-6">
                     {sidebarMenu.map((item, index) => (
-                        <li key={index} className="p-3 cursor-pointer hover:bg-gray-800 hover:text-white rounded-md" onClick={() => (setIsDrawer(false))}><Link href={item.link} className='flex items-center gap-2'><item.icon />{item.title}</Link></li>
+                        <li key={index} className="p-3 cursor-pointer hover:bg-gray-800 rounded-md" onClick={() => setIsDrawer(false)}>
+                            <Link href={item.link} className="flex items-center gap-2 text-white">
+                                <item.icon />
+                                {item.title}
+                            </Link>
+                        </li>
                     ))}
                 </ul>
             </div>

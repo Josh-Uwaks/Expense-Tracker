@@ -204,7 +204,7 @@ const Page = () => {
               </Avatar>
               <div className='flex flex-col'>
                 <p className='text-[#727272]'>{user?.email}</p>
-                <Link href='/upload' className='text-blue-600 hover:underline mt-1'>Change Photo</Link>
+                <Link href={''} className='text-blue-600 hover:underline mt-1'>Change Photo</Link>
               </div>
             </div>
 

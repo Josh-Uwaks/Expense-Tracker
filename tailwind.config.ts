@@ -61,7 +61,16 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+			'success-green': 'var(--color-success-green)', // Use the variable
+			'primary-dark': 'var(--color-primary-dark)',
+			'primary-light': 'var(--color-primary-light)',
+			'neutral-white': 'var(--color-neutral-white)',
+			'neutral-light-gray': 'var(--color-neutral-light-gray)',
+			'neutral-medium-gray': 'var(--color-neutral-medium-gray)',
+			'neutral-dark-gray': 'var(--color-neutral-dark-gray)',
+			'warning-yellow': 'var(--color-warning-yellow)',
+			'error-red': 'var(--color-error-red)',
   		}
   	}
   },

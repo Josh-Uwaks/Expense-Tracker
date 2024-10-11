@@ -3,7 +3,7 @@
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Category, Expense, CategoryResponse } from "@/app/types";
+import { Category, Expense } from "@/app/types";
 import  { getUserCategories, getUserExpense, addCategory as apiAddCategory, addExpense as apiAddExpense } from "@/lib/ApiRequests/requests";
 import {useTransition} from 'react'
 import { toast } from "@/hooks/use-toast";

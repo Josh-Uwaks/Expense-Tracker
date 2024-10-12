@@ -68,7 +68,7 @@ const CreateExpense = () => {
             date: ''
         })
         setCategory("");
-        setFilteredCategories([]); // Clear suggestions
+        setFilteredCategories([]); 
     }
 
     const handleFormData = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -90,17 +90,17 @@ const CreateExpense = () => {
         const { value } = e.target;
         setCategory(value);
 
-        // Filter categories based on input
+        
         const filtered = categories
             .filter(cat => cat.name.toLowerCase().includes(value.toLowerCase()))
-            .map(cat => cat.name); // Assuming categories is an array of objects with a `name` property
+            .map(cat => cat.name); 
 
         setFilteredCategories(filtered);
     };
 
     const selectSuggestion = (suggestion: string) => {
         setCategory(suggestion);
-        setFilteredCategories([]); // Clear suggestions after selection
+        setFilteredCategories([]); 
     };
 
     return (

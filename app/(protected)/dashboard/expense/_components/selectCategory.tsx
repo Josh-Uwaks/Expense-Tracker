@@ -1,6 +1,5 @@
 
 
-import { Category } from "@/app/types"
 import {
     Select,
     SelectContent,
@@ -23,10 +22,6 @@ import {
   }
 
 const SelectCategory = ({classname, name, value, onChange, category}: SelectCategoryProp) => {
-
-    console.log({
-        "category from selectcat": category
-    })
    
     return (
         <Select name={name} value={value} onValueChange={onChange}>

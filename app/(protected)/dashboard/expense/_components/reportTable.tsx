@@ -40,11 +40,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Expense, ExpenseUpdateInput } from "@/app/types"
+import { Expense } from "@/app/types"
 import { format } from 'date-fns'
-import { deleteExpense, updateExpense } from "@/lib/ApiRequests/requests"
 import { useAppContext } from "@/app/context/appcontext"
-import { toast } from "@/hooks/use-toast"
 
 const columns: ColumnDef<Expense>[] = [
   {
@@ -116,70 +114,19 @@ const columns: ColumnDef<Expense>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const { userId } = useAppContext()
+      const { userId, handleUpdate, handleDelete, setExpenseId, expenseId, deleting, saving } = useAppContext()
       const expense = row.original
 
-      const [expenseId, setExpenseId] = React.useState<string | null>(null);
       const [date, setDate] = React.useState<Date | undefined>(new Date(expense.date))
       const [category, setCategory] = React.useState(expense.category)
       const [amount, setAmount] = React.useState(expense.amount)
       const [description, setDescription] = React.useState(expense.description)
-      const [saving, setSaving] = React.useState<boolean>(false)
-      const [deleting, setDeleting] = React.useState<boolean>(false)
 
-      const handleUpdate = async () => {
-        setSaving(true)
-        try {
-          if (expenseId) {
-            const updateData: ExpenseUpdateInput = {
-              amount,
-              description,
-              userId,
-              categoryId: category,
-              date: date ? date.toISOString() : new Date().toISOString()
-            };
-            await updateExpense(expenseId, updateData);
-            setSaving(false)
-            toast({
-              variant: 'default',
-              title: 'SUCCESS',
-              description: `Expense updated successfully - ID: ${expenseId}`
-            });
-          }
-        } catch (error: any) {
-          console.log(error)
-          setSaving(false)
-          toast({
-            variant: 'destructive',
-            title: 'ERROR',
-            description: `Failed to update expense: ${error.message || 'Unknown error'}`
-          });
-          console.error('Error in handleUpdate:', error);
+      const Update = () => {
+        if(expenseId) {
+          handleUpdate(amount, description || '', userId || '', category, date ? date.toString() : '')
         }
-      };
-
-      const handleDelete = async () => {
-        setDeleting(true);
-        try {
-          if (expenseId) {
-            await deleteExpense(expenseId);
-            toast({
-              variant: 'default',
-              title: 'SUCCESS',
-              description: `Expense deleted successfully - ID: ${expenseId}`,
-            });
-          }
-        } catch (error: any) {
-          console.log(error);
-          toast({
-            variant: 'destructive',
-            title: 'ERROR',
-            description: `Failed to delete expense: ${error.message || 'Unknown error'}`,
-          });
-        } finally {
-          setDeleting(false);
-        }
-      };
+      }
 
       return (
         <Dialog>
@@ -202,6 +149,7 @@ const columns: ColumnDef<Expense>[] = [
                   <Input
                     type="text"
                     id="category"
+                    disabled
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     className="mt-1"
@@ -264,7 +212,7 @@ const columns: ColumnDef<Expense>[] = [
               </Button>
               <div className="flex gap-3">
                 <Button variant={'outline'}>Cancel</Button>
-                <Button onClick={handleUpdate} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</Button>
+                <Button onClick={Update} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</Button>
               </div>
             </div>
           </DialogContent>

@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar, PieChart, Pie } from 'recharts'
 import { ArrowLeftRight } from 'lucide-react';
 import { useAppContext } from '@/app/context/appcontext';
-import { format, startOfWeek, endOfWeek, isSameWeek, getMonth } from 'date-fns';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
 
 export default function Chart() {
   const [changeChart, setChangeChart] = React.useState(false);
@@ -101,6 +101,7 @@ export default function Chart() {
       ) : (
         <BarChart width={dimension.width} height={dimension.height} data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
+          {/* Using default parameters in place of defaultProps */}
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />

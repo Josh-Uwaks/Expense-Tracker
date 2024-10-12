@@ -116,16 +116,16 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
   export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
     const { id } = params;
 
-    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    // const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
-    // Apply rate limiting
-    const isAllowed = await checkRateLimit(ip);
-    if (!isAllowed) {
-      return NextResponse.json(
-        { message: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
+    // // Apply rate limiting
+    // const isAllowed = await checkRateLimit(ip);
+    // if (!isAllowed) {
+    //   return NextResponse.json(
+    //     { message: 'Rate limit exceeded. Please try again later.' },
+    //     { status: 429 }
+    //   );
+    // }
   
   
     try {
@@ -202,16 +202,16 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
   export async function DELETE(request: NextRequest, { params }: { params: Params }) {
     const { id } = params;
   
-    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    // const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
-    // Apply rate limiting
-    const isAllowed = await checkRateLimit(ip);
-    if (!isAllowed) {
-      return NextResponse.json(
-        { message: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
+    // // Apply rate limiting
+    // const isAllowed = await checkRateLimit(ip);
+    // if (!isAllowed) {
+    //   return NextResponse.json(
+    //     { message: 'Rate limit exceeded. Please try again later.' },
+    //     { status: 429 }
+    //   );
+    // }
 
     
     try {

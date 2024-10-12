@@ -12,7 +12,7 @@ export function MacbookScrollDemo() {
         //   </span>
         // }
         
-        src={`/code.jpg`}
+        src={`/expensetracker_bg.png`}
         showGradient={false}
       />
     </div>

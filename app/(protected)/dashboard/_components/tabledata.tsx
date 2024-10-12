@@ -17,7 +17,7 @@ export default function RecentTransaction() {
   return (
     <>
       <div className="flex flex-col gap-5 py-6">
-        {expenseData.slice(0, 6).map((item, index) => (
+        {expenseData.slice(0, 5).map((item, index) => (
           <div key={index} className="flex justify-between shadow-lg p-4 rounded-lg transition duration-200 hover:shadow-xl">
 
             <div className="flex items-center gap-3">

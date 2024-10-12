@@ -3,8 +3,8 @@
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Category, Expense } from "@/app/types";
-import  { getUserCategories, getUserExpense, addCategory as apiAddCategory, addExpense as apiAddExpense } from "@/lib/ApiRequests/requests";
+import { Category, Expense, ExpenseUpdateInput } from "@/app/types";
+import  { getUserCategories, getUserExpense, addCategory as apiAddCategory, addExpense as apiAddExpense, updateExpense, deleteExpense } from "@/lib/ApiRequests/requests";
 import {useTransition} from 'react'
 import { toast } from "@/hooks/use-toast";
 
@@ -17,10 +17,16 @@ interface ContextType {
     getTotalExpense: () => number; 
     addCategory: (name: string, userId: string) => Promise<void>;
     addExpense: (amount: number, description: string, categoryname: string, userId: string, date: string) => Promise<void>;
+    handleUpdate: (amount: number, description: string, userId: string, categoryId: string,  date: string) => Promise<void>;
+    handleDelete: () => Promise<void>;
     isExpenseLoading: boolean;
     isCategoryLoading: boolean;
     isExpensePending: boolean;
     isCategoryPending: boolean;
+    saving: boolean;
+    deleting: boolean;
+    expenseId: string | null;
+    setExpenseId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const AppContext = createContext<ContextType | undefined>(undefined);
@@ -37,6 +43,9 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
     const [isCategoryPending, setIsCategoryTransition] = useTransition()
     const [isExpenseLoading, setIsExpenseLoading] = useState<boolean>(false)
     const [isCategoryLoading, setIsCategoryLoading] = useState<boolean>(false)
+    const [expenseId, setExpenseId] = React.useState<string | null>(null);
+    const [saving, setSaving] = React.useState<boolean>(false)
+    const [deleting, setDeleting] = React.useState<boolean>(false)
 
     const userId = session?.user?.id;
 
@@ -164,8 +173,81 @@ export function ContextWrapper({ children }: { children: React.ReactNode }) {
         }
     };
 
+    const handleUpdate = async (amount: number, description: string, userId: string, categoryId: string,  date: string) => {
+   
+        try {
+            setSaving(true)
+          if (expenseId) {
+            const updateData: ExpenseUpdateInput = {
+              amount,
+              description,
+              userId,
+              categoryId,
+              date: date ? new Date(date).toISOString() : new Date().toISOString()
+            };
+
+            const response = await updateExpense(expenseId, updateData);
+
+            setSaving(false)
+
+            if(response.message === "Expense updated successfully"){
+              toast({
+              variant: 'default',
+              title: 'SUCCESS',
+              description: `Expense updated successfully - ID: ${expenseId}`
+            });
+            }
+
+            setIsExpenseTransition(() => {
+                fetchExpenseData()
+            })
+
+          }
+        } catch (error: any) {
+          console.log(error)
+          setSaving(false)
+          toast({
+            variant: 'destructive',
+            title: 'ERROR',
+            description: `Failed to update expense: ${error.message || 'Unknown error'}`
+          });
+          console.error('Error in handleUpdate:', error);
+        }
+      };
+
+      const handleDelete = async () => {
+        setDeleting(true);
+        try {
+          if (expenseId) {
+            await deleteExpense(expenseId);
+            
+               toast({
+              variant: 'default',
+              title: 'SUCCESS',
+              description: `Expense deleted successfully - ID: ${expenseId}`,
+            });
+
+            setDeleting(false)
+        
+            setIsExpenseTransition(() => {
+                fetchExpenseData()
+            })
+           
+          }
+        } catch (error: any) {
+          console.log(error);
+          toast({
+            variant: 'destructive',
+            title: 'ERROR',
+            description: `Failed to delete expense: ${error.message || 'Unknown error'}`,
+          });
+        } finally {
+          setDeleting(false);
+        }
+      };
+
     return (
-        <AppContext.Provider value={{ session, expenseData, categories, isExpenseLoading, isCategoryLoading, error, userId, isExpensePending, isCategoryPending, addCategory, addExpense, getTotalExpense }}>
+        <AppContext.Provider value={{ session, expenseData, categories, isExpenseLoading, isCategoryLoading, error, userId, isExpensePending, isCategoryPending, saving, deleting, expenseId, addCategory, addExpense, getTotalExpense, handleUpdate, handleDelete, setExpenseId }}>
             {children}
         </AppContext.Provider>
     );

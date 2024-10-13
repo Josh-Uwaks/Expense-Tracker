@@ -18,7 +18,7 @@ export default function LearnMore() {
             <DialogTitle className="text-2xl font-bold text-gray-800 mb-4">About this Project</DialogTitle>
           </DialogHeader>
 
-          <DialogDescription className="space-y-6">
+          <DialogDescription className="space-y-6 h-[400px] overflow-y-auto">
             <p className="text-gray-700 leading-relaxed text-base">
               This expense tracker application was built to help users gain insights into their spending habits by tracking daily and monthly expenses. 
               The motivation behind the project is to allow users to have a clearer understanding of where their money goes each day and month, enabling them to make informed financial decisions.

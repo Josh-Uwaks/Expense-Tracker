@@ -38,7 +38,7 @@ const Navbar = () => {
 const Section = () => {
   return (
     <section className="bg-white rounded-[25px] pt-28 border border-gray-200 mx-auto max-w-screen-xl lg:items-center shadow-lg overflow-hidden">
-      <div className="mx-auto max-w-xl text-center">
+      <div className="mx-auto max-w-xl text-center px-6 md:p-0">
         <h1 className="md:text-[50px] text-4xl font-bold text-gray-800">Track Your Expense</h1>
         <p className="mt-6 text-gray-600">
           I built this application to track my daily expenses and gain insights into my spending habits on both a daily and monthly basis. 

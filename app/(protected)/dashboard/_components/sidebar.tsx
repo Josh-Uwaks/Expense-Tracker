@@ -1,16 +1,24 @@
 "use client"
+
 import { sidebarMenu } from '@/components/data/data';
 import Link from 'next/link';
 import { DollarSign } from 'lucide-react';
 import { usePathname } from 'next/navigation'; // for active link detection
+import { LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+
 
 export default function Sidebar(){
     const pathname = usePathname(); // Get current route
 
+    const logout = async () => {
+        await signOut()
+    }
+
     return(
-        <div className="text-gray-300"> 
+        <div className="text-gray-300 min-h-screen bg-gray-900"> 
             
-            <div className='flex items-center px-6 my-8 text-white'>
+            <div className='flex items-center px-6 py-8 text-white'>
                 <DollarSign size={40} className='mr-3'/>
                 <h1 className='tracking-widest font-bold text-3xl'>Trackify</h1>
             </div>
@@ -29,6 +37,13 @@ export default function Sidebar(){
                     )
                 })}
             </ul>
+
+            <div className='p-6 mt-[400px] text-red-600'>
+                <button onClick={logout} className='flex items-center gap-2'>
+                <LogOut size={30} />
+                 LogOut
+                </button>
+            </div>
         </div>
     )
 }

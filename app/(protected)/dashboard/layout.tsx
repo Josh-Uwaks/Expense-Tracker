@@ -10,7 +10,7 @@ export default function DashboardLayout({children}: {children: React.ReactNode})
         <NextSessionProvider>
             <ContextWrapper>
             <div className="text-[14px]">
-                <div className=" hidden bg-gray-900 md:block fixed min-w-[300px] min-h-screen border-r">
+                <div className=" hidden md:block fixed min-w-[300px] border-r">
                     <Sidebar/>
                 </div>
 

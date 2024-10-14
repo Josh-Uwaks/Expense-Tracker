@@ -25,15 +25,15 @@ export default async function Navbar() {
                 {/* Additional functional buttons or elements can go here if needed */}
             </div>
 
-            <DropdownMenu>
-                <DropdownMenuTrigger>
+            {/* <DropdownMenu>
+                <DropdownMenuTrigger> */}
                     <Avatar>
                         <AvatarImage src={user?.image || ""} alt='' />
                         <AvatarFallback className='uppercase'>{user?.email.charAt(0)}</AvatarFallback>
                     </Avatar>
-                </DropdownMenuTrigger>
+                {/* </DropdownMenuTrigger> */}
 
-                <DropdownMenuContent className="w-48 bg-white border border-gray-300 rounded-md shadow-lg">
+                {/* <DropdownMenuContent className="w-48 bg-white border border-gray-300 rounded-md shadow-lg">
                     <form action={async () => {
                         "use server"
                         await signOut()
@@ -42,8 +42,8 @@ export default async function Navbar() {
                             <DropdownMenuItem className="hover:bg-gray-100 transition-colors duration-200">Sign Out</DropdownMenuItem>
                         </Button>
                     </form>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent> */}
+            {/* </DropdownMenu> */}
         </div>
     )
 }

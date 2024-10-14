@@ -3,8 +3,9 @@
 import React, { useEffect, useRef } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { sidebarMenu } from "@/components/data/data";
-import { DollarSign } from 'lucide-react';
+import { DollarSign, LogOut } from 'lucide-react';
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 export default function ToggleNav() {
     const [isDrawer, setIsDrawer] = React.useState(false);
@@ -31,6 +32,11 @@ export default function ToggleNav() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isDrawer]);
+
+    const logout = async() => {
+        await signOut()
+        setIsDrawer(false)
+    }
 
     return (
         <>
@@ -60,6 +66,14 @@ export default function ToggleNav() {
                         </li>
                     ))}
                 </ul>
+
+
+                <div className='p-8 mt-[400px] text-red-600'>
+                <button onClick={logout} className='flex items-center gap-2'>
+                    <LogOut size={30} />
+                    LogOut
+                </button>
+            </div>
             </div>
         </>
     );

@@ -108,34 +108,34 @@ const CreateExpense = () => {
             <DialogTrigger asChild>
                 <Button className="flex items-center bg-blue-600 text-white hover:bg-blue-500 transition duration-300">
                     <Plus size={20} />
-                    <span className='hidden md:block'>New Expense</span>
+                    <span className="hidden md:block">New Expense</span>
                 </Button>
             </DialogTrigger>
 
             <DialogContent className="min-w-[70%] bg-white rounded-lg shadow-lg p-6">
                 <DialogHeader>
-                    <DialogTitle className="text-lg font-semibold text-gray-800">Create New Expense</DialogTitle>
-                    <DialogDescription className="text-gray-600">
+                    <DialogTitle className="text-lg font-semibold text-gray-800 text-left">Create New Expense</DialogTitle>
+                    <DialogDescription className="text-gray-600 text-left">
                         Please provide the necessary information to add to the expense data.
                     </DialogDescription>
                 </DialogHeader>
-                <Separator className="mt-4 mb-8" />
+                <Separator className="md:mt-4 md:mb-8" />
 
                 <div className="mt-3 lg:grid grid-cols-2 gap-5">
                     <div>
                         <div className="flex flex-col md:flex-row md:items-center">
                             <Label htmlFor="amount" className="lg:w-[100px] text-left">Amount*</Label>
-                            <Input type="number" id="amount" placeholder="Enter Amount" className="mt-1 md:mt-0 lg:w-[500px] border-gray-300 focus:border-blue-500 focus:ring-blue-500" name="amount" value={expenseData.amount} onChange={handleFormData} />
+                            <Input type="number" id="amount" placeholder="Enter Amount" className="mt-3 md:mt-0 lg:w-[500px] border-gray-300 focus:border-blue-500 focus:ring-blue-500" name="amount" value={expenseData.amount} onChange={handleFormData} />
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
-                            <Label className="lg:w-[100px] text-left">Date*</Label>
-                            <DatePicker classname="w-full lg:w-[500px] mt-1 md:mt-0" selectedDate={expenseData.date ? new Date(expenseData.date) : undefined}
+                            <Label className="lg:w-[100px] text-left mb-2 md:mb-0">Date*</Label>
+                            <DatePicker classname="w-full lg:w-[500px] md:mt-0" selectedDate={expenseData.date ? new Date(expenseData.date) : undefined}
                                 onDateChange={handleDateChange} />
                         </div>
                         <div className="flex flex-col md:flex-row md:items-center">
-                            <Label className="lg:w-[100px] text-left">Category*</Label>
+                            <Label className="lg:w-[100px] text-left mb-2">Category*</Label>
                             <SelectCategory
-                                classname='w-full lg:w-[500px] mt-1 md:mt-0'
+                                classname='w-full lg:w-[500px] mt-2 md:mt-0'
                                 name="category"
                                 value={expenseData.category}
                                 category={categories.map((item) => ({ label: item.name, value: item.id }))}
@@ -143,7 +143,7 @@ const CreateExpense = () => {
                             />
                         </div>
                         <div className="my-4 flex flex-col md:flex-row md:items-center">
-                            <Label htmlFor="description" className="lg:w-[100px] text-left">Description*</Label>
+                            <Label htmlFor="description" className="lg:w-[100px] mb-2 text-left">Description*</Label>
                             <Textarea placeholder="Description here..." className="mt-1 md:mt-0 resize-none w-full lg:w-[500px] h-[200px] border-gray-300 focus:border-blue-500 focus:ring-blue-500" name="description" value={expenseData.description} onChange={handleFormData} />
                         </div>
                     </div>
@@ -157,7 +157,7 @@ const CreateExpense = () => {
                                 onChange={handleCategoryInputChange}
                                 name="addCat"
                             />
-                            <Button onClick={AddCategory} disabled={isCategoryPending || isCategoryLoading} className="bg-green-600 text-white hover:bg-green-500 transition duration-300">
+                            <Button onClick={AddCategory} disabled={isCategoryPending || isCategoryLoading || !category} className={`${!category ? 'bg-blue-200' : 'bg-blue-600'} text-white hover:bg-blue-400 transition duration-300`}>
                                 {isCategoryLoading || isCategoryPending ? "Adding..." : "Add"}
                             </Button>
                         </div>

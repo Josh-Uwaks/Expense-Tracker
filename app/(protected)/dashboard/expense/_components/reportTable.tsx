@@ -121,18 +121,25 @@ const columns: ColumnDef<Expense>[] = [
       const [category, setCategory] = React.useState(expense.category)
       const [amount, setAmount] = React.useState(expense.amount)
       const [description, setDescription] = React.useState(expense.description)
+      const [dialogOpen, setDialogOpen] = React.useState(false)
 
       const Update = () => {
         if(expenseId) {
           handleUpdate(amount, description || '', userId || '', category, date ? date.toString() : '')
+          setDialogOpen(false)
         }
       }
 
       return (
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0"
-              onClick={() => setExpenseId(row.original.id)}>
+              onClick={() => 
+              {
+                setExpenseId(row.original.id)
+                setDialogOpen(true)
+              }
+              }>
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
@@ -211,7 +218,7 @@ const columns: ColumnDef<Expense>[] = [
                 <Trash2 />{deleting ? 'Deleting...' : 'Delete Expense'}
               </Button>
               <div className="flex gap-3">
-                <Button variant={'outline'}>Cancel</Button>
+                <Button variant={'outline'} onClick={() => setDialogOpen(false)}>Cancel</Button>
                 <Button onClick={Update} disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</Button>
               </div>
             </div>

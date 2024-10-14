@@ -41,7 +41,7 @@ export default function Sidebar(){
             <div className='p-6 mt-[400px] text-red-600'>
                 <button onClick={logout} className='flex items-center gap-2'>
                 <LogOut size={30} />
-                 LogOut
+                 Logout
                 </button>
             </div>
         </div>

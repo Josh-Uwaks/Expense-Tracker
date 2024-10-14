@@ -39,7 +39,9 @@ export default function DateEntry({classname, onSubmit}: DateEntryProp) {
         <div className={classname}>
         <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="flex gap-4 flex-wrap">
+              <div className="md:flex gap-4">
+
+            <div className='grid grid-cols-2 md:flex gap-2'>
 
               <FormField
               control={form.control}
@@ -96,7 +98,7 @@ export default function DateEntry({classname, onSubmit}: DateEntryProp) {
                           <Button
                           variant={"outline"}
                           className={cn(
-                              "md:w-[240px] pl-3 text-left font-normal",
+                              "md:w-[240px] text-left font-normal",
                               !field.value && "text-muted-foreground"
                           )}
                           >
@@ -127,7 +129,9 @@ export default function DateEntry({classname, onSubmit}: DateEntryProp) {
               )}
               />
 
-              <div className='flex gap-4'>
+              </div>
+
+              <div className='grid grid-cols-2 md:flex gap-4 mt-3 md:mt-0'>
                   <Button type="submit" className="bg-gray-800">Query</Button>
                   <Button variant={'outline'}>Show All</Button>
               </div>

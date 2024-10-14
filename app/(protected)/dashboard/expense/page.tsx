@@ -11,6 +11,7 @@ import FilterByDateRangeHook from '@/hooks/filterhook';
 import { toast } from '@/hooks/use-toast';
 import { DateSchema } from '@/app/schemas/schema';
 import { Download } from 'lucide-react';
+import * as XLSX from 'xlsx'
 
 
 const page = () => {
@@ -28,16 +29,26 @@ const page = () => {
     } else {
       handleFilter(data.first_date_entry, data.second_date_entry);
     }
-
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
   }
+
+   // Function to download the filtered data as an Excel file
+   const downloadExcel = () => {
+    if (filteredData.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'No Data Available',
+        description: 'There is no data to download. Please filter the data first.',
+      });
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Filtered Data');
+
+    // Generate and download the Excel file
+    XLSX.writeFile(workbook, 'ExpenseData.xlsx');
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -50,12 +61,14 @@ const page = () => {
       </div>
 
       <div className="space-y-10 py-6 px-6 md:px-14">
-        <div className="flex lg:grid grid-cols-3 w-full">
+        <div className="flex flex-col gap-3 lg:grid grid-cols-3 w-full">
           <DateEntry classname="col-start-1 col-end-3" onSubmit={onSubmit} />
 
-          <div className="flex items-center justify-end gap-3 flex-wrap col-start-3 col-end-4">
+          <div className="flex-wrap col-start-3 col-end-4">
+            <div className='flex justify-between items-center gap-3  md:justify-end'>
             <CreateExpense />
-            <Download size={15} />
+            <Download size={20} onClick={downloadExcel} className=' cursor-pointer'/>
+            </div>
           </div>
 
         </div>
